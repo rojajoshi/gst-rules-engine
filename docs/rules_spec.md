@@ -1,7 +1,42 @@
 # GST Rules Specification
 
 ## Scope and assumptions
-(What this covers, what it doesn't, "simplified, not tax advice", BAS method chosen)
+
+**Purpose:** This specification defines a simplified GST calculation and BAS reporting engine for an Australian GST-registered business, covering the classification of sales and purchases, GST calculations, GST credit eligibility and BAS summaries.
+
+**In scope:**
+- GST treatment of domestic sales and purchases, and export sales.
+- Classification of transactions as taxable, GST-free or input-taxed.
+- Specific GST rules for exports, financial supplies, taxable food, basic food, medical services and other qualifying health services.
+- Default taxable treatment for transactions that do not match a specific rule.
+- Transaction category resolution using tax code mappings and supplier defaults.
+- GST credit eligibility checks based on GST treatment and supplier GST registration.
+- GST calculations for both GST-inclusive and GST-exclusive amounts.
+- Transaction-level GST rounding and reconciliation tolerances.
+- BAS summary calculations for G1 (total sales), 1A (GST on sales) and 1B (GST on purchases).
+
+**Out of scope:**
+- GST treatment of imports and associated import GST.
+- GST credit apportionment for businesses making both taxable and input-taxed supplies.
+- Reduced input tax credits.
+- Private or non-business use of purchases.
+- Detailed GST credit eligibility requirements beyond the simplified supplier registration check, including valid tax invoice requirements and business-use verification.
+- GST adjustments, corrections and adjustment events.
+- Detailed product-level GST classification, which is assumed to occur before transactions enter the engine.
+- Mixed-supply calculations and apportionment. Mixed food hampers are assumed to be split into separate transaction lines before classification.
+- Verification of export requirements, including export time limits and evidence of export.
+- Detailed assessment of whether individual financial supplies or health services qualify for their respective GST treatments.
+
+**Key decisions:**
+- **Client assumptions:** The client is assumed to be registered for GST, and all transactions are made in the course of its business.
+- **BAS method:** Calculation Worksheet Method. G1 includes the GST-inclusive value of all sales, while 1A and 1B are calculated using the engine's expected GST amounts.
+- **Rounding:** Use the ATO taxable sale rule, rounding GST separately for each transaction line before summing. Apply round-half-up to two decimal places using Python's `Decimal` and `ROUND_HALF_UP`. Allow a rounding tolerance of $0.01 per line and $0.01 multiplied by the number of taxable lines at invoice level.
+- **Amounts:** Transaction amounts may be GST-inclusive or GST-exclusive. For taxable transactions, calculate GST as `gross_amount / 11` for GST-inclusive amounts or `net_amount × 0.10` for GST-exclusive amounts. GST-free and input-taxed transactions have zero GST. BAS sales totals use GST-inclusive amounts.
+- **Category resolution:** Transaction-line tax codes take priority over supplier default categories. Transactions without either mapping are assigned `unknown` and flagged for review.
+- **GST credits:** Apply supplier GST registration checks after GST treatment rules. Purchases from unregistered suppliers have zero expected GST and no claimable GST credit.
+- **Unknown categories:** Apply provisional taxable treatment under R99, but hold purchase GST credits for review until the category is verified.
+
+**Disclaimer:** This is a simplified portfolio project demonstrating GST classification, calculation and BAS reporting logic using selected Australian GST rules. It is not a complete implementation of Australian tax legislation and should not be relied upon for actual tax or BAS lodgement. Assumptions and unresolved treatment decisions require validation by a qualified tax professional.
 
 ## Treatment rules
 
