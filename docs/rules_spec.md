@@ -394,6 +394,92 @@ This field is used by quality checks to distinguish expected category difference
 
 ## GST credits on purchases
 
+The `credit_claimable` field determines whether a purchase is eligible for a GST credit. Credit eligibility is determined separately from category resolution and GST treatment because it depends on both what was purchased and whether the supplier was registered for GST.
+
+- **Source:** ATO, [Simpler BAS GST bookkeeping guide](https://www.ato.gov.au/businesses-and-organisations/preparing-lodging-and-paying/business-activity-statements-bas/goods-and-services-tax-gst/simpler-bas-gst-bookkeeping-guide) (purchases you can't claim GST credits for).
+
+### Why this is a separate step
+
+GST treatment rules (R01–R99) determine the initial GST treatment and set a preliminary `credit_claimable` value and `expected_gst` amount.
+
+A separate eligibility step runs after the treatment rules to apply supplier registration requirements.
+
+This separation:
+- Keeps treatment rules focused on the purchased goods or services.
+- Avoids duplicating supplier registration checks across individual rules.
+- Allows supplier eligibility requirements to be changed centrally without modifying individual treatment rules.
+- Ensures expected GST is correctly adjusted before reconciliation.
+
+### Order of checks
+
+Apply the following sequence:
+
+1. **Apply GST treatment rules (R01–R99):** Determine the category-based GST treatment and set the initial `credit_claimable` and `expected_gst` values.
+2. **Check supplier GST registration:** Apply a separate check after all treatment rules have run.
+3. **Adjust expected GST and credit eligibility:**
+   - If the supplier is GST-registered, retain the preliminary `expected_gst` and `credit_claimable` values.
+   - If the supplier is not GST-registered, set `expected_gst = 0.00` and `credit_claimable = No`, regardless of the preliminary values.
+
+### Supplier registration rule
+
+A supplier that is not registered for GST cannot charge GST. Therefore, purchases from an unregistered supplier cannot generate a GST credit, and no GST should be expected on the purchase.
+
+For unregistered suppliers:
+- Set `expected_gst` to `0.00`.
+- Set `credit_claimable` to `No`.
+- Retain the resolved `category` and `category_source`.
+- Do not change the category-based GST treatment classification.
+- Retain all existing quality flags.
+
+The registration check overrides both `Yes` and `Review`:
+- Initial `Yes` becomes `No`.
+- Initial `Review` becomes `No`.
+- Initial `No` remains `No`.
+
+### Handling unknown categories
+
+If a purchase has an unknown category:
+- If the supplier is registered, retain `credit_claimable = Review` as assigned by R99.
+- If the supplier is not registered, change `credit_claimable` to `No` and set `expected_gst = 0.00`.
+- Retain `category = unknown` and `category_source = unknown`.
+- Keep the unknown-category quality flag regardless of supplier registration status.
+
+The registration check determines credit eligibility and expected GST but does not resolve missing category information.
+
+### Quality flags
+
+The following conditions should be flagged through the quality checks:
+
+| Condition | Quality flag | Action |
+|---|---|---|
+| Unknown category | `unknown_category` | Review category mapping and provisional GST treatment. |
+| Invoice shows GST but supplier is not registered | `gst_charged_by_unregistered_supplier` | Flag for investigation. Do not allow a GST credit. |
+
+An unregistered supplier's invoice showing GST is a potential invoicing or data error. The engine must not accept the GST amount as claimable simply because it appears on the invoice.
+
+Reconciliation provides an additional check: because `expected_gst` is set to `0.00`, any GST amount shown on the invoice will also be identified as a discrepancy.
+
+### Examples
+
+| Case | Purchase | Category | GST treatment | Supplier registered? | Invoice GST | Expected GST | `credit_claimable` | Flag? |
+|---|---|---|---|---|---:|---:|---|---|
+| GC-1 | Office supplies | `stationery` | Taxable | Yes | $10.00 | $10.00 | `Yes` | No |
+| GC-2 | Office supplies | `stationery` | Taxable | No | $0.00 | $0.00 | `No` | No |
+| GC-3 | Basic food | `basic_food` | GST-free | Yes | $0.00 | $0.00 | `No` | No |
+| GC-4 | Unclassified purchase | `unknown` | Provisional taxable (R99) | Yes | $10.00 | $10.00 | `Review` | `unknown_category` |
+| GC-5 | Unclassified purchase | `unknown` | Provisional taxable (R99) | No | $0.00 | $0.00 | `No` | `unknown_category` |
+| GC-6 | Office supplies | `stationery` | Taxable | No | $10.00 | $0.00 | `No` | `gst_charged_by_unregistered_supplier` and reconciliation discrepancy |
+
+### Important distinction
+
+The supplier registration check can override credit eligibility and expected GST, but it does not override category resolution or remove existing quality flags.
+
+For example:
+- An unknown-category purchase from an unregistered supplier receives `credit_claimable = No` and `expected_gst = 0.00`, but remains flagged for category review.
+- An invoice from an unregistered supplier showing GST receives `credit_claimable = No` and `expected_gst = 0.00`. It is flagged by both the supplier-registration quality check and reconciliation.
+
+This ensures that supplier eligibility, expected GST and data-quality checks remain separate but consistent.
+
 ## BAS summary rules
 ### G1 / 1A / 1B
 
