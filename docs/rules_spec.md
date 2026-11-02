@@ -301,9 +301,96 @@ Difference: $0.03. The gap grows with the number of lines, because each line's r
 - For example, `$1.235` becomes `$1.24`.
 - Use Python's `Decimal` with `ROUND_HALF_UP` for GST calculations. Do not use Python's default `round()`, which uses round half to even.
 
-
 ## Category resolution
-(tax code → supplier default → unknown)
+
+Category resolution determines which category is assigned to each transaction line before the GST treatment rules are applied.
+
+### Assumptions
+
+- Each tax code in `tax_codes.csv` maps to a single category.
+- Each supplier in `suppliers.csv` has a default category, where available.
+- Each supplier has a `multi_category` field indicating whether it regularly supplies goods or services across multiple categories.
+
+**Note:** This assumes client-specific tax code mappings are available. Real ERP tax codes may represent GST treatment rather than a specific category. For example, a `GST` or `FRE` tax code alone may not distinguish basic food from other goods. This assumption is listed in the Open questions.
+
+### Resolution order
+
+Use the following priority order:
+
+1. **Tax code:** If a tax code is available for the transaction line, use the category mapped to that tax code.
+2. **Supplier default:** If no tax code is available, use the supplier's default category, if one exists.
+3. **Unknown:** If neither a tax code nor a supplier default is available, assign `unknown`.
+
+### Why the tax code takes priority
+
+The tax code is assigned at the transaction-line level, so it can reflect the specific item or service being purchased or sold.
+
+A supplier default applies to the supplier as a whole and may not accurately represent every transaction.
+
+For example, a supermarket sells both basic food and taxable goods. Its supplier default might be `basic_food`, but this would incorrectly classify items such as cleaning products or cooked food. A tax code assigned to each line can distinguish between these categories.
+
+Therefore, the tax code takes priority over the supplier default.
+
+### Category source
+
+Record how each category was determined using the `category_source` field.
+
+| Value | Meaning |
+|---|---|
+| `tax_code` | Category determined from the transaction-line tax code |
+| `supplier_default` | Category determined from the supplier's default because no tax code was available |
+| `unknown` | Neither a tax code nor a supplier default was available |
+
+### Handling unknown categories
+
+If neither a tax code nor a supplier default is available:
+
+- Set `category` to `unknown`.
+- Set `category_source` to `unknown`.
+- Allow R99 to apply the default taxable treatment.
+- Flag the transaction through the quality checks for review.
+
+The quality flag does not change the provisional treatment assigned by R99.
+
+### Conflicting tax codes and supplier defaults
+
+If the tax code and supplier default indicate different categories, the tax code takes priority because it is specific to the transaction line.
+
+However, the disagreement is checked against the supplier's `multi_category` setting:
+
+- If `multi_category` = `true`, the disagreement is expected and does not generate a quality flag.
+- If `multi_category` = `false`, flag the disagreement for review, because the supplier is expected to operate within a single category.
+
+For example, a supermarket has a supplier default of `basic_food`, but a transaction line has tax code `TF` (mapped to `taxable_food`):
+
+- Resolve the category as `taxable_food`.
+- Set `category_source` to `tax_code`.
+- Do not flag the disagreement, because the supermarket has `multi_category` = `true`.
+- Apply the GST treatment rules for `taxable_food`.
+
+For a single-category supplier, the disagreement is flagged, but the tax code still takes priority. The flag does not override the resolved category.
+
+### Examples
+
+Tax codes used below (final list defined in `tax_codes.csv`):
+`TF` = `taxable_food`, `BF` = `basic_food`.
+
+| Case | tax_code | supplier_default | multi_category | Resolved category | category_source | Flag? |
+|---|---|---|---|---|---|---|
+| CR-1 | `TF` | `basic_food` | true | `taxable_food` | `tax_code` | No: expected for a multi-category supplier |
+| CR-2 | blank | `stationery` | false | `stationery` | `supplier_default` | No |
+| CR-3 | blank | blank | N/A | `unknown` | `unknown` | Yes: unknown category |
+| CR-4 | `BF` | `stationery` | false | `basic_food` | `tax_code` | Yes: unexpected disagreement for a single-category supplier |
+
+### Supplier configuration
+
+Add the following field to `suppliers.csv`:
+
+| Field | Type | Meaning |
+|---|---|---|
+| `multi_category` | Boolean | Whether the supplier regularly supplies goods or services across multiple categories. |
+
+This field is used by quality checks to distinguish expected category differences from potentially incorrect supplier or tax code mappings.
 
 ## GST credits on purchases
 
@@ -333,3 +420,4 @@ Difference: $0.03. The gap grows with the number of lines, because each line's r
 | Should overseas financial supplies be GST-free under R01 or input-taxed under R02? | R01 / R02 | R01 takes priority when both rules match. | Incorrect GST classification for overseas financial supplies, potentially resulting in incorrect BAS reporting. |
 | How should GST credits be apportioned for clients making both taxable and input-taxed sales? | R02 | Assume clients do not make input-taxed sales affecting their GST credit entitlement. | The engine may overstate GST credits on taxable purchases relating to input-taxed supplies. |
 | Should unknown categories default to taxable, with credits held for review? | R99 | Unknown categories receive provisional taxable treatment, with purchases set to `Review` for credit eligibility. Pending tax SME approval. | Incorrect assumptions could result in misclassified transactions or incorrect GST credit claims. |
+| Do the client's tax codes identify a specific category, or only the GST treatment? | Category resolution | Each tax code maps to a single category in `tax_codes.csv`. | If codes only show treatment (e.g. `GST`, `FRE`), the engine can't tell basic food from medical, and more lines would fall back to the supplier default or `unknown`. |
