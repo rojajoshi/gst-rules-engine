@@ -210,10 +210,97 @@
 | R99-5 | purchase | stationery | AU | 100.00 | Taxable | 10.00 | Yes | R99: Known taxable category; credit claimable, assuming a registered supplier. |
 
 ## Calculation rules
+
 ### GST-exclusive amounts
+
+- **Formula:** `expected_gst` = `net_amount` × 0.10.
+- **Explanation:** When an amount is GST-exclusive, GST is calculated as 10% of the amount.
+- **Source:** ATO, [Tax invoices](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/tax-invoices).
+
+**Example:**
+
+| net_amount | amount_type | Expected GST | Expected total |
+|---:|---|---:|---:|
+| 100.00 | GST-exclusive | 10.00 | 110.00 |
+
 ### GST-inclusive amounts
+
+- **Formula:** `expected_gst` = `gross_amount` ÷ 11.
+- **Explanation:** A GST-inclusive price contains 110% of the original price: 100% net amount plus 10% GST. Therefore, GST represents 10/110, which simplifies to 1/11 of the total price.
+- **Source:** ATO, [Tax invoices](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/tax-invoices).
+
+**Example:**
+
+| gross_amount | amount_type | Expected GST | Expected net amount |
+|---:|---|---:|---:|
+| 110.00 | GST-inclusive | 10.00 | 100.00 |
+
 ### Non-taxable lines
+
+- **Formula:** `expected_gst` = `0.00`, regardless of whether the amount is GST-inclusive or GST-exclusive.
+- **Explanation:** GST-free and input-taxed supplies do not have GST added to their price. For a GST-inclusive non-taxable amount, the entire amount remains the net amount for this calculation.
+- **Source:** ATO, [GST-free sales](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/when-to-charge-gst-and-when-not-to/gst-free-sales) and [Input-taxed sales](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/when-to-charge-gst-and-when-not-to/input-taxed-sales).
+
+**Example:**
+
+| Description | gross_amount | Expected treatment | Expected GST | Expected net amount |
+|---|---:|---|---:|---:|
+| Basic food | 110.00 | GST-free | 0.00 | 110.00 |
+
 ### Rounding
+
+Two ATO-approved approaches can be used to calculate GST across multiple taxable sale lines:
+
+- **Taxable sale rule:** Calculate GST separately for each line, round each result to two decimal places, then add the rounded amounts to get the invoice GST total.
+- **Total invoice rule:** Calculate GST separately for each line without rounding, add the unrounded amounts together, then round the final invoice GST total to two decimal places.
+
+**Engine decision:**
+
+Use the **taxable sale rule (round each line, then sum)**.
+
+This approach is straightforward to implement because each transaction line can be calculated and rounded independently. It also aligns with displaying GST amounts per line on an invoice, making individual line calculations easier to check and reconcile.
+
+- **Source:** ATO, [Tax invoices](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/tax-invoices) ("Rounding of GST" section). The ATO also states that suppliers and customers don't need to use the same rounding rule.
+
+**Example 1: Three GST-inclusive lines of $10.05**
+
+Each line has an exact GST amount of `10.05 / 11 = 0.913636...`
+
+| Calculation | Taxable sale rule | Total invoice rule |
+|---|---:|---:|
+| Line 1 | 0.91 | 0.913636... |
+| Line 2 | 0.91 | 0.913636... |
+| Line 3 | 0.91 | 0.913636... |
+| Total before final rounding | 2.73 | 2.740909... |
+| **Final invoice GST** | **2.73** | **2.74** |
+
+Difference: $0.01.
+
+**Example 2: Ten GST-inclusive lines of $10.04**
+
+Each line has an exact GST amount of `10.04 / 11 = 0.912727...`
+
+| Calculation | Taxable sale rule | Total invoice rule |
+|---|---:|---:|
+| Each line | 0.91 | 0.912727... |
+| Total before final rounding | 9.10 | 9.127272... |
+| **Final invoice GST** | **9.10** | **9.13** |
+
+Difference: $0.03. The gap grows with the number of lines, because each line's rounding can shift by up to half a cent in the same direction.
+
+**Rounding tolerance:**
+
+- **Line level:** allow a maximum difference of $0.01 per line.
+- **Invoice level:** allow a maximum difference of $0.01 × the number of taxable lines on the invoice.
+- These tolerances exist because a client may legitimately use the other ATO-approved rounding rule, which can produce small differences that grow with invoice length.
+- The tolerance only covers rounding differences, not larger calculation errors. Any difference above it is flagged.
+
+**Rounding convention:**
+
+- Round half up: amounts of exactly half a cent or more round up to the next cent.
+- For example, `$1.235` becomes `$1.24`.
+- Use Python's `Decimal` with `ROUND_HALF_UP` for GST calculations. Do not use Python's default `round()`, which uses round half to even.
+
 
 ## Category resolution
 (tax code → supplier default → unknown)
