@@ -169,6 +169,46 @@
 | R05-3 | purchase | gst_free_medical | AU | 100.00 | GST-free | 0.00 | No | R05: Medical service is GST-free, so there is no GST credit to claim. |
 | R05-4 | sale | cosmetic_procedure | AU | 500.00 | Taxable | 50.00 | N/A | R05 skipped because cosmetic procedures aren't assigned a GST-free health category; R99 default taxable rule applies. |
 
+### R99: Default taxable
+
+- **Applies to:** Sales and purchases that have not matched any preceding GST treatment rule.
+
+- **Treatment:** Taxable (10% GST), assuming the amount is GST-exclusive.
+
+- **Priority:** 99, checked last after R01 to R05. R99 is the fallback rule when no specific rule matches.
+
+- **Exceptions:**
+  - GST-free and input-taxed transactions must be classified by their specific rules before R99 applies.
+  - Transactions with an `unknown` category receive the default taxable treatment but are flagged for review by the quality checks.
+
+- **Engine logic:**
+  - Check R99 only if R01 to R05 have not already matched.
+  - Classify the transaction as taxable.
+  - Calculate `expected_gst` as `net_amount` × 0.10.
+  - If `transaction_type` = `purchase` and `category` = `unknown`, set `credit_claimable` = `Review`.
+  - If `transaction_type` = `purchase` and `category` is known, set `credit_claimable` = `Yes`. If `transaction_type` = `sale`, set `credit_claimable` = `N/A`.
+  - Unknown categories and missing destination information are flagged separately by the quality checks.
+
+- **Assumptions (not modelled):**
+  - Assume all transactions are made by a GST-registered client in the course of their business and meet the other requirements for taxable treatment unless a specific rule applies.
+  - Assume `net_amount` is GST-exclusive.
+  - Detailed GST credit eligibility, including supplier registration and creditable acquisition requirements, is handled separately in the GST credits section.
+
+- **Sources:**
+  - ATO, [GST-free sales](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/when-to-charge-gst-and-when-not-to/gst-free-sales).
+  - ATO, [Input-taxed sales](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/when-to-charge-gst-and-when-not-to/input-taxed-sales).
+  - A New Tax System (Goods and Services Tax) Act 1999, section 9-5.
+
+#### Examples
+
+| Case | transaction_type | category | destination_country | net_amount | Expected treatment | Expected GST | credit_claimable | Why |
+|---|---|---|---|---:|---|---:|---|---|
+| R99-1 | sale | stationery | AU | 100.00 | Taxable | 10.00 | N/A | R99: No preceding rule matches; default taxable treatment applies. |
+| R99-2 | sale | cosmetic_procedure | AU | 500.00 | Taxable | 50.00 | N/A | R99: No GST-free health rule matches; default taxable treatment applies. |
+| R99-3 | sale | unknown | AU | 100.00 | Taxable | 10.00 | N/A | R99: Default taxable treatment applies; unknown category is flagged by quality checks. |
+| R99-4 | purchase | unknown | AU | 100.00 | Taxable | 10.00 | Review | R99: Default taxable treatment applies; credit eligibility requires review. |
+| R99-5 | purchase | stationery | AU | 100.00 | Taxable | 10.00 | Yes | R99: Known taxable category; credit claimable, assuming a registered supplier. |
+
 ## Calculation rules
 ### GST-exclusive amounts
 ### GST-inclusive amounts
@@ -205,3 +245,4 @@
 |---|---|---|---|
 | Should overseas financial supplies be GST-free under R01 or input-taxed under R02? | R01 / R02 | R01 takes priority when both rules match. | Incorrect GST classification for overseas financial supplies, potentially resulting in incorrect BAS reporting. |
 | How should GST credits be apportioned for clients making both taxable and input-taxed sales? | R02 | Assume clients do not make input-taxed sales affecting their GST credit entitlement. | The engine may overstate GST credits on taxable purchases relating to input-taxed supplies. |
+| Should unknown categories default to taxable, with credits held for review? | R99 | Unknown categories receive provisional taxable treatment, with purchases set to `Review` for credit eligibility. Pending tax SME approval. | Incorrect assumptions could result in misclassified transactions or incorrect GST credit claims. |
