@@ -481,7 +481,79 @@ For example:
 This ensures that supplier eligibility, expected GST and data-quality checks remain separate but consistent.
 
 ## BAS summary rules
-### G1 / 1A / 1B
+
+### G1: Total sales
+
+**Definition:** Total value of sales, including taxable, GST-free and input-taxed sales.
+
+**Filter:**
+```sql
+G1 = SUM(gross_amount)
+WHERE transaction_type = 'sale'
+```
+
+**Includes:** All sales, regardless of GST treatment, including exports.
+
+**Excludes:** Purchases, loans, and other transactions that are not sales.
+
+**Note:** Amounts are GST-inclusive, consistent with the Calculation Worksheet Method.
+
+### 1A: GST on sales
+
+**Definition:** Total GST payable on taxable sales.
+
+**Filter:**
+```sql
+1A = SUM(expected_gst)
+WHERE transaction_type = 'sale'
+AND gst_treatment = 'taxable'
+```
+
+**Includes:** GST calculated by the engine for taxable sales, using `expected_gst` as calculated under the Calculation rules.
+
+**Excludes:** GST-free sales, input-taxed sales and purchases.
+
+**Important:** BAS reports the GST liability, not simply the amount the client charged on their invoices. The engine uses calculated GST rather than invoice GST, with any differences handled through reconciliation.
+
+**Rounding note:** The engine sums GST rounded at the individual transaction-line level. As a result, 1A may differ from the worksheet's G9 calculation by a few cents.
+
+### 1B: GST on purchases
+
+**Definition:** GST credits the business can claim on eligible purchases.
+
+**Filter:**
+```sql
+1B = SUM(expected_gst)
+WHERE transaction_type = 'purchase'
+AND credit_claimable = 'Yes'
+```
+
+**Includes:** Purchases marked `Yes` after GST treatment and supplier registration checks, using `expected_gst` as calculated under the Calculation rules.
+
+**Excludes:** GST-free purchases, input-taxed purchases, purchases from unregistered suppliers, and purchases marked `Review` or `No`.
+
+**Note:** `credit_claimable` is the main filter. This simplified model assumes purchases marked `Yes` also meet other credit requirements, such as business use and holding a valid tax invoice. Private use and apportionment are not modelled.
+
+### Example
+
+All amounts below are GST-inclusive.
+
+| Transaction | Type | Category | GST treatment | Gross amount | Expected GST | Credit claimable |
+|---|---|---|---|---:|---:|---|
+| Stationery sale | Sale | stationery | Taxable | $1,100.00 | $100.00 | N/A |
+| Basic food sale | Sale | basic_food| GST-free | $220.00 | $0.00 | N/A |
+| Financial services sale | Sale | financial_services | Input-taxed | $550.00 | $0.00 | N/A |
+| Stationery purchase | Purchase | stationery | Taxable | $110.00 | $10.00 | Yes |
+| Basic food purchase | Purchase | basic_food| GST-free | $55.00 | $0.00 | No |
+| Unknown purchase | Purchase | unknown | Provisional taxable | $110.00 | $10.00 | Review |
+
+**BAS summary:**
+
+- **G1 = $1,870.00** ($1,100 + $220 + $550). All three sales are included, regardless of GST treatment.
+- **1A = $100.00**. Only the taxable sale contributes GST.
+- **1B = $10.00**. Only the stationery purchase is marked `Yes`. The basic food purchase is excluded because it is GST-free, and the unknown purchase is excluded because it is marked `Review`, not `Yes`.
+
+The unknown purchase still has provisional GST of $10.00 under R99, but it does not contribute to the GST credit total until reviewed.
 
 ## Resolved questions
 
