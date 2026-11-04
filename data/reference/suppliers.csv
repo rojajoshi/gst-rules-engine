@@ -1,0 +1,9 @@
+supplier_id,supplier_name,default_category,multi_category,gst_registered,country
+S01,Fresh Fields Grocers,basic_food,True,True,AU
+S02,Brew & Bite Cafe,taxable_food,False,True,AU
+S03,Northbridge Bank,financial_services,False,True,AU
+S04,Riverside Medical Clinic,gst_free_medical,False,True,AU
+S05,PaperTrail Office Supplies,stationery,False,True,AU
+S06,CloudForge Software,software,False,True,AU
+S07,Swift Payments,payment_processing,False,True,AU
+S08,Corner Print Shop,stationery,False,False,AU

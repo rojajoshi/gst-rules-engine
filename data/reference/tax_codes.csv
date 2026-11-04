@@ -1,0 +1,10 @@
+tax_code,category,description
+ST,stationery,Office supplies and printing
+SW,software,Software and licences
+TF,taxable_food,"Prepared, hot or other taxable food"
+BF,basic_food,GST-free basic food
+FS,financial_services,Input-taxed financial supplies
+PP,payment_processing,Payment processing (taxable)
+MED,gst_free_medical,GST-free medical services
+OHS,gst_free_other_health,GST-free other health services
+COS,cosmetic_procedure,Cosmetic procedures (taxable)

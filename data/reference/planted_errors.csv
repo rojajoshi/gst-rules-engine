@@ -1,0 +1,20 @@
+client_id,invoice_id,line_no,expected_check,note
+client_a,A-INV-0010,1,amount_outlier,"Unusually large for this supplier. Flag as info, not invalid"
+client_a,A-INV-0010,2,amount_outlier,"Unusually large for this supplier. Flag as info, not invalid"
+client_a,A-INV-0011,1,negative_amount_on_invoice,Negative on an invoice
+client_a,A-INV-0007,1,none,"Credit note refund. Negative is valid, should not be flagged"
+client_a,A-INV-0005,1,gst_mismatch,GST overcharged by $3.00
+client_a,A-INV-0020,1,gst_charged_by_unregistered_supplier,Corner Print Shop isn't GST-registered but charged GST
+client_a,A-INV-0010,3,orphan_supplier,Supplier 'Mystery Traders Pty Ltd' not in reference data
+client_a,A-INV-0004,1,unknown_category,No tax code and no supplier default
+client_a,A-INV-0012,2,missing_destination,Sale with no destination
+client_a,A-INV-0001,1,duplicate_line,Same invoice and line twice
+client_a,A-INV-0014,2,invalid_country,'Australia' isn't an ISO code. Skip the export rule and flag
+client_a,A-INV-0022,1,missing_supplier,Purchase with a blank supplier
+client_a,A-INV-9001,,possible_resubmitted_invoice,"Copy of A-INV-0002: same supplier, date and total, new number"
+client_b,B-INV-0013,1,amount_outlier,Unusually large software purchase
+client_b,B-INV-9001,,none,"Total invoice rule rounding (2.74 vs 2.73). Within tolerance, should not be flagged"
+client_b,B-INV-0013,2,category_conflict,Software supplier line coded as basic food
+client_b,B-INV-0026,1,unmapped_tax_code,Code 'ZZ' isn't in tax_codes.csv. Fall back to supplier default and flag
+client_b,B-INV-0002,4,invalid_date,31 February doesn't exist
+client_b,B-INV-0005,2,missing_required_field,Amount is blank
