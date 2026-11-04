@@ -1,0 +1,134 @@
+# Machine-readable schema for the GST rules engine.
+# Human-readable version: docs/data_dictionary.md
+# Column names here must match docs/rules_spec.md, config/gst_rules.yaml and the code.
+#
+# All amounts are assumed to be AUD; foreign currency is out of scope.
+#
+# Implementation notes:
+# - Read CSVs with keep_default_na=False, otherwise pandas turns "N/A" and "NA" into blanks.
+# - Do money calculations in Python with Decimal. DuckDB's .df() returns DECIMAL columns as floats.
+# - Quote country codes in YAML: an unquoted NO (Norway) loads as False.
+
+version: 1
+
+types:
+  money: decimal(12,2)   # always Decimal in Python, DECIMAL(12,2) in SQL, never float
+
+enums:
+  document_type: [invoice, credit_note]
+  transaction_type: [sale, purchase]
+  category:
+    - stationery
+    - software
+    - taxable_food
+    - basic_food
+    - financial_services
+    - payment_processing
+    - gst_free_medical
+    - gst_free_other_health
+    - cosmetic_procedure
+    - unknown
+  category_source: [tax_code, supplier_default, llm, unknown]
+  gst_treatment: [taxable, gst_free, input_taxed]
+  credit_claimable: ["Yes", "No", "Review", "N/A"]
+  severity: [error, warning, info]
+
+# Standard transaction schema: one row per invoice line, after ingest and mapping.
+# Only values known from the raw file live here. Anything that depends on GST
+# treatment (net_amount, gross_amount) is an engine output.
+transactions:
+  # Business key. Flagged, not enforced: duplicates are kept and reported by the
+  # duplicate_line check, so the key is only unique after de-duplication.
+  business_key: [client_id, invoice_id, line_no]
+  columns:
+    client_id:            {type: string,  required: true,  description: "Client the file came from, e.g. client_a"}
+    source_file:          {type: string,  required: true,  description: "Raw file name the row was read from"}
+    source_row_number:    {type: integer, required: true,  description: "Row number in the raw file (1 = first data row)"}
+    invoice_id:           {type: string,  required: true,  description: "Invoice number as issued"}
+    line_no:              {type: integer, required: true,  description: "Line number within the invoice"}
+    invoice_date:         {type: date,    required: true,  description: "Invoice date, parsed using the client's date_format"}
+    document_type:        {type: enum, enum: document_type, required: true, default: invoice, description: "Credit notes may legitimately have negative amounts"}
+    transaction_type:     {type: enum, enum: transaction_type, required: true, description: "Sale or purchase, from the client's point of view"}
+    original_supplier:    {type: string,  required: false, description: "Supplier name exactly as received, kept for traceability"}
+    supplier_id:          {type: string,  required: false, description: "Matched from original_supplier via suppliers.csv. Required for purchases (missing_supplier / orphan_supplier checks)"}
+    description:          {type: string,  required: false, description: "Free-text line description as received"}
+    original_tax_code:    {type: string,  required: false, description: "Tax code exactly as received, kept for traceability"}
+    tax_code:             {type: string,  required: false, description: "Normalised tax code (trimmed, upper case), looked up in tax_codes.csv"}
+    amounts_include_gst:  {type: boolean, required: true,  description: "Set from the client's mapping config"}
+    original_amount:      {type: money,   required: true,  description: "Line amount exactly as received. Inclusive or exclusive per amounts_include_gst"}
+    gst_charged:          {type: money,   required: false, description: "GST shown on the client's invoice, if provided"}
+    original_destination: {type: string,  required: false, description: "Destination exactly as received"}
+    destination_country:  {type: string,  required: false, format: "ISO 3166-1 alpha-2", description: "Normalised (trimmed, upper case). Blank if missing or not in countries.csv"}
+
+# Columns added by the engine. Never present in raw files.
+engine_outputs:
+  columns:
+    category:          {type: enum, enum: category,         description: "Resolved category, see Category resolution"}
+    category_source:   {type: enum, enum: category_source,  description: "Where the category came from"}
+    rule_id:           {type: string,                       description: "Treatment rule that fired, e.g. R01, R99"}
+    gst_treatment:     {type: enum, enum: gst_treatment,    description: "Taxable, GST-free or input-taxed"}
+    net_amount:        {type: money,                        description: "GST-exclusive amount. Derived once treatment and supplier registration are known"}
+    gross_amount:      {type: money,                        description: "GST-inclusive amount. Derived once treatment and supplier registration are known"}
+    expected_gst:      {type: money,                        description: "GST the engine expects, rounded per line (taxable sale rule)"}
+    credit_claimable:  {type: enum, enum: credit_claimable, description: "Purchases only; N/A for sales"}
+    gst_variance:      {type: money,                        description: "gst_charged - expected_gst (null if gst_charged is missing)"}
+    excluded_from_bas: {type: boolean,                      description: "True if the row has any error-severity issue. BAS totals only include rows where this is false"}
+
+# Data quality issues: one row per problem found.
+issues:
+  columns:
+    client_id:          {type: string,  required: true}
+    source_file:        {type: string,  required: true}
+    source_row_number:  {type: integer, required: true}
+    invoice_id:         {type: string,  required: false}
+    line_no:            {type: integer, required: false}
+    check_name:         {type: string,  required: true, description: "Name of the check, see quality_checks. (Not 'check': reserved word in DuckDB)"}
+    severity:           {type: enum, enum: severity, required: true}
+    message:            {type: string,  required: true, description: "Plain-English explanation for a reviewer"}
+
+# error   = the row can't be trusted. Sets excluded_from_bas = true, so it's left out of BAS totals and reported separately.
+# warning = needs a human to check. Still included in totals.
+# info    = unusual but probably fine. Still included in totals.
+quality_checks:
+  missing_required_field:               {severity: error,   description: "A required column is blank"}
+  invalid_date:                         {severity: error,   description: "invoice_date could not be parsed"}
+  duplicate_line:                       {severity: error,   description: "Same client_id + invoice_id + line_no appears more than once (every copy after the first)"}
+  gst_charged_by_unregistered_supplier: {severity: error,   description: "Invoice shows GST but supplier is not GST-registered"}
+  possible_resubmitted_invoice:         {severity: warning, description: "Different invoice_id but same supplier, date and invoice total"}
+  missing_supplier:                     {severity: warning, description: "Purchase with a blank supplier"}
+  orphan_supplier:                      {severity: warning, description: "original_supplier not found in suppliers.csv"}
+  unmapped_tax_code:                    {severity: warning, description: "tax_code not in tax_codes.csv. Treated as no tax code"}
+  unknown_category:                     {severity: warning, description: "No usable tax code or supplier default; R99 applied provisionally"}
+  category_conflict:                    {severity: warning, description: "Tax code category differs from default of a single-category supplier"}
+  missing_destination:                  {severity: warning, description: "Sale with blank destination"}
+  invalid_country:                      {severity: warning, description: "Destination not in countries.csv (e.g. 'Australia'). Export rule skipped"}
+  negative_amount_on_invoice:           {severity: warning, description: "Negative amount on an invoice (allowed on credit notes)"}
+  gst_mismatch:                         {severity: warning, description: "gst_variance outside rounding tolerance"}
+  amount_outlier:                       {severity: info,    description: "Amount unusual for this supplier (modified z-score using median + MAD > 3.5). Flagged, not invalid"}
+
+# Reference tables (data/reference/). The CSV files are the source of truth for
+# their values; this file only defines their columns. A test checks every category
+# in tax_codes.csv and suppliers.csv is in enums.category.
+suppliers:
+  key: [supplier_id]
+  columns:
+    supplier_id:       {type: string,  required: true}
+    supplier_name:     {type: string,  required: true, description: "Fictional names only. Matched against original_supplier"}
+    default_category:  {type: enum, enum: category, required: false, description: "Ignored when multi_category is true"}
+    multi_category:    {type: boolean, required: true}
+    gst_registered:    {type: boolean, required: true}
+    country:           {type: string,  required: true, format: "ISO 3166-1 alpha-2"}
+
+tax_codes:
+  key: [tax_code]
+  columns:
+    tax_code:     {type: string, required: true}
+    category:     {type: enum, enum: category, required: true}
+    description:  {type: string, required: true}
+
+countries:
+  key: [country_code]
+  source: data/reference/countries.csv   # ISO 3166-1 alpha-2, from pycountry. Read with keep_default_na=False (NA = Namibia)
+  columns:
+    country_code:  {type: string, required: true}
+    country_name:  {type: string, required: true}

@@ -26,13 +26,15 @@
 - Mixed-supply calculations and apportionment. Mixed food hampers are assumed to be split into separate transaction lines before classification.
 - Verification of export requirements, including export time limits and evidence of export.
 - Detailed assessment of whether individual financial supplies or health services qualify for their respective GST treatments.
+- Foreign currency transactions. All amounts are assumed to be in AUD.
 
 **Key decisions:**
 - **Client assumptions:** The client is assumed to be registered for GST, and all transactions are made in the course of its business.
 - **BAS method:** Calculation Worksheet Method. G1 includes the GST-inclusive value of all sales, while 1A and 1B are calculated using the engine's expected GST amounts.
 - **Rounding:** Use the ATO taxable sale rule, rounding GST separately for each transaction line before summing. Apply round-half-up to two decimal places using Python's `Decimal` and `ROUND_HALF_UP`. Allow a rounding tolerance of $0.01 per line and $0.01 multiplied by the number of taxable lines at invoice level.
-- **Amounts:** Transaction amounts may be GST-inclusive or GST-exclusive. For taxable transactions, calculate GST as `gross_amount / 11` for GST-inclusive amounts or `net_amount × 0.10` for GST-exclusive amounts. GST-free and input-taxed transactions have zero GST. BAS sales totals use GST-inclusive amounts.
-- **Category resolution:** Transaction-line tax codes take priority over supplier default categories. Transactions without either mapping are assigned `unknown` and flagged for review.
+- **Amounts:** Transaction amounts may be GST-inclusive or GST-exclusive. For taxable transactions, calculate GST as `original_amount ÷ 11` for GST-inclusive amounts or `original_amount × 0.10` for GST-exclusive amounts. `net_amount` and `gross_amount` are derived by the engine after treatment is known. GST-free and input-taxed transactions have zero GST. BAS sales totals use GST-inclusive amounts.
+- **Category resolution:** Transaction-line tax codes take priority over supplier default categories. Defaults of multi-category suppliers are never used. Lines without a usable tax code or trustworthy default are assigned `unknown` and flagged for review.
+- **Data quality and BAS:** Rows with an `error`-severity issue are marked `excluded_from_bas` and left out of all BAS totals.
 - **GST credits:** Apply supplier GST registration checks after GST treatment rules. Purchases from unregistered suppliers have zero expected GST and no claimable GST credit.
 - **Unknown categories:** Apply provisional taxable treatment under R99, but hold purchase GST credits for review until the category is verified.
 
@@ -49,8 +51,9 @@
   - Services provided to customers in Australia may be taxable, even if an overseas party pays.
   - Unknown customer locations cannot be confirmed as GST-free.
 - **Engine logic:**
-  - If `transaction_type` = `sale` and `destination_country` is not blank and not `AU`, classify as GST-free.
-  - If `destination_country` is blank, skip the export rule and flag a data quality issue, then continue to category-based rules.
+  - `destination_country` is normalised at ingest (trimmed, upper case). Values that aren't valid ISO 3166-1 alpha-2 codes (e.g. `Australia`) are set to blank and flagged `invalid_country`, so a typo can never turn a sale into an export.
+  - If `transaction_type` = `sale` and `destination_country` is a valid code other than `AU`, classify as GST-free.
+  - If `destination_country` is blank (missing or invalid), skip the export rule and flag a data quality issue (`missing_destination` or `invalid_country`), then continue to category-based rules.
   - If `destination_country` = `AU`, skip the export rule and continue to category-based rules.
   - Exports apply to sales, not purchases.
 - **Assumptions (not modelled):**
@@ -63,13 +66,15 @@
 
 #### Examples
 
-| Case | transaction_type | category | destination_country | net_amount | Expected treatment | Expected GST | credit_claimable | Why |
-|---|---|---|---|---:|---|---:|---|---|
-| R01-1 | sale | software | NZ | 1000.00 | GST-free | 0.00 | N/A | R01: Overseas destination; export rule applies. |
-| R01-2 | sale | stationery | JP | 200.00 | GST-free | 0.00 | N/A | R01: Export rule overrides the normally taxable category. |
-| R01-3 | sale | stationery | blank | 100.00 | Taxable | 10.00 | N/A | R01 skipped because destination is blank; R99 default taxable rule applies. |
-| R01-4 | sale | stationery | AU | 100.00 | Taxable | 10.00 | N/A | R01 skipped because the sale is domestic; R99 default taxable rule applies. |
-| R01-5 | sale | basic_food | blank | 100.00 | GST-free | 0.00 | N/A | R01 skipped because destination is blank; R04 basic food rule applies. |
+All rule examples use GST-exclusive amounts (`amounts_include_gst` = false), so `original_amount` is the net amount here. GST-inclusive cases are covered under Calculation rules.
+
+| Case | transaction_type | category | destination_country | original_amount | amounts_include_gst | Expected treatment | Expected GST | credit_claimable | Why |
+|---|---|---|---|---:|---|---|---:|---|---|
+| R01-1 | sale | software | NZ | 1000.00 | false | GST-free | 0.00 | N/A | R01: Overseas destination; export rule applies. |
+| R01-2 | sale | stationery | JP | 200.00 | false | GST-free | 0.00 | N/A | R01: Export rule overrides the normally taxable category. |
+| R01-3 | sale | stationery | blank | 100.00 | false | Taxable | 10.00 | N/A | R01 skipped because destination is blank; R99 default taxable rule applies. |
+| R01-4 | sale | stationery | AU | 100.00 | false | Taxable | 10.00 | N/A | R01 skipped because the sale is domestic; R99 default taxable rule applies. |
+| R01-5 | sale | basic_food | blank | 100.00 | false | GST-free | 0.00 | N/A | R01 skipped because destination is blank; R04 basic food rule applies. |
 
 ### R02: Financial supplies
 
@@ -100,14 +105,14 @@
 
 #### Examples
 
-| Case | transaction_type | category | destination_country | net_amount | Expected treatment | Expected GST | credit_claimable | Why |
-|---|---|---|---|---:|---|---:|---|---|
-| R02-1 | purchase | financial_services | AU | 500.00 | Input-taxed | 0.00 | No | R02: Loan interest; no GST is included in the price. |
-| R02-2 | purchase | financial_services | AU | 20.00 | Input-taxed | 0.00 | No | R02: Assumed input-taxed bank account fee. |
-| R02-3 | sale | financial_services | AU | 1000.00 | Input-taxed | 0.00 | N/A | R02: Interest earned from a qualifying lending arrangement. |
-| R02-4 | sale | financial_services | AU | 100.00 | Input-taxed | 0.00 | N/A | R02: Providing a credit card facility. |
-| R02-5 | sale | financial_services | US | 1000.00 | GST-free | 0.00 | N/A | R01: Overseas destination; R01 takes precedence under the current assumption. |
-| R02-6 | sale | payment_processing | AU | 100.00 | Taxable | 10.00 | N/A | R02 skipped because interchange services use `payment_processing`; R99 default taxable rule applies. |
+| Case | transaction_type | category | destination_country | original_amount | amounts_include_gst | Expected treatment | Expected GST | credit_claimable | Why |
+|---|---|---|---|---:|---|---|---:|---|---|
+| R02-1 | purchase | financial_services | AU | 500.00 | false | Input-taxed | 0.00 | No | R02: Loan interest; no GST is included in the price. |
+| R02-2 | purchase | financial_services | AU | 20.00 | false | Input-taxed | 0.00 | No | R02: Assumed input-taxed bank account fee. |
+| R02-3 | sale | financial_services | AU | 1000.00 | false | Input-taxed | 0.00 | N/A | R02: Interest earned from a qualifying lending arrangement. |
+| R02-4 | sale | financial_services | AU | 100.00 | false | Input-taxed | 0.00 | N/A | R02: Providing a credit card facility. |
+| R02-5 | sale | financial_services | US | 1000.00 | false | GST-free | 0.00 | N/A | R01: Overseas destination; R01 takes precedence under the current assumption. |
+| R02-6 | sale | payment_processing | AU | 100.00 | false | Taxable | 10.00 | N/A | R02 skipped because interchange services use `payment_processing`; R99 default taxable rule applies. |
 
 ### R03: Taxable food
 
@@ -121,7 +126,7 @@
 - **Engine logic:**
   - Check R03 only if R01 and R02 have not already matched.
   - If `category` = `taxable_food`, classify as taxable for both sales and purchases.
-  - Calculate `expected_gst` as `net_amount` × 0.10, assuming the amount is GST-exclusive.
+  - Calculate `expected_gst` for a taxable line per Calculation rules (× 0.10 if exclusive, ÷ 11 if inclusive).
   - If `transaction_type` = `purchase`, set `credit_claimable` = `Yes`, assuming a registered supplier and a creditable business purchase. Otherwise, set it to `N/A`.
   - If the category does not match, continue to the remaining rules.
 - **Assumptions (not modelled):**
@@ -134,11 +139,11 @@
 
 #### Examples
 
-| Case | transaction_type | category | destination_country | net_amount | Expected treatment | Expected GST | credit_claimable | Why |
-|---|---|---|---|---:|---|---:|---|---|
-| R03-1 | sale | taxable_food | AU | 20.00 | Taxable | 2.00 | N/A | R03: Hot takeaway chicken is taxable. |
-| R03-2 | sale | taxable_food | AU | 25.00 | Taxable | 2.50 | N/A | R03: Restaurant meal supplied for consumption on the premises. |
-| R03-3 | purchase | taxable_food | AU | 12.00 | Taxable | 1.20 | Yes | R03: Chocolate is taxable, and GST credits can generally be claimed on a qualifying business purchase. |
+| Case | transaction_type | category | destination_country | original_amount | amounts_include_gst | Expected treatment | Expected GST | credit_claimable | Why |
+|---|---|---|---|---:|---|---|---:|---|---|
+| R03-1 | sale | taxable_food | AU | 20.00 | false | Taxable | 2.00 | N/A | R03: Hot takeaway chicken is taxable. |
+| R03-2 | sale | taxable_food | AU | 25.00 | false | Taxable | 2.50 | N/A | R03: Restaurant meal supplied for consumption on the premises. |
+| R03-3 | purchase | taxable_food | AU | 12.00 | false | Taxable | 1.20 | Yes | R03: Chocolate is taxable, and GST credits can generally be claimed on a qualifying business purchase. |
 
 ### R04: Basic food
 
@@ -165,11 +170,11 @@
 
 #### Examples
 
-| Case | transaction_type | category | destination_country | net_amount | Expected treatment | Expected GST | credit_claimable | Why |
-|---|---|---|---|---:|---|---:|---|---|
-| R04-1 | sale | basic_food | AU | 10.00 | GST-free | 0.00 | N/A | R04: Fresh fruit is basic food. |
-| R04-2 | sale | basic_food | AU | 15.00 | GST-free | 0.00 | N/A | R04: Cold cooked chicken is GST-free. |
-| R04-3 | purchase | basic_food | AU | 8.00 | GST-free | 0.00 | No | R04: Plain bread is GST-free, so there is no GST credit to claim. |
+| Case | transaction_type | category | destination_country | original_amount | amounts_include_gst | Expected treatment | Expected GST | credit_claimable | Why |
+|---|---|---|---|---:|---|---|---:|---|---|
+| R04-1 | sale | basic_food | AU | 10.00 | false | GST-free | 0.00 | N/A | R04: Fresh fruit is basic food. |
+| R04-2 | sale | basic_food | AU | 15.00 | false | GST-free | 0.00 | N/A | R04: Cold cooked chicken is GST-free. |
+| R04-3 | purchase | basic_food | AU | 8.00 | false | GST-free | 0.00 | No | R04: Plain bread is GST-free, so there is no GST credit to claim. |
 
 ### R05: Medical and other health services
 
@@ -197,18 +202,18 @@
 
 #### Examples
 
-| Case | transaction_type | category | destination_country | net_amount | Expected treatment | Expected GST | credit_claimable | Why |
-|---|---|---|---|---:|---|---:|---|---|
-| R05-1 | sale | gst_free_medical | AU | 100.00 | GST-free | 0.00 | N/A | R05: Medical consultation for which a Medicare benefit is payable. |
-| R05-2 | sale | gst_free_other_health | AU | 80.00 | GST-free | 0.00 | N/A | R05: Physiotherapy supplied by a recognised professional as appropriate treatment. |
-| R05-3 | purchase | gst_free_medical | AU | 100.00 | GST-free | 0.00 | No | R05: Medical service is GST-free, so there is no GST credit to claim. |
-| R05-4 | sale | cosmetic_procedure | AU | 500.00 | Taxable | 50.00 | N/A | R05 skipped because cosmetic procedures aren't assigned a GST-free health category; R99 default taxable rule applies. |
+| Case | transaction_type | category | destination_country | original_amount | amounts_include_gst | Expected treatment | Expected GST | credit_claimable | Why |
+|---|---|---|---|---:|---|---|---:|---|---|
+| R05-1 | sale | gst_free_medical | AU | 100.00 | false | GST-free | 0.00 | N/A | R05: Medical consultation for which a Medicare benefit is payable. |
+| R05-2 | sale | gst_free_other_health | AU | 80.00 | false | GST-free | 0.00 | N/A | R05: Physiotherapy supplied by a recognised professional as appropriate treatment. |
+| R05-3 | purchase | gst_free_medical | AU | 100.00 | false | GST-free | 0.00 | No | R05: Medical service is GST-free, so there is no GST credit to claim. |
+| R05-4 | sale | cosmetic_procedure | AU | 500.00 | false | Taxable | 50.00 | N/A | R05 skipped because cosmetic procedures aren't assigned a GST-free health category; R99 default taxable rule applies. |
 
 ### R99: Default taxable
 
 - **Applies to:** Sales and purchases that have not matched any preceding GST treatment rule.
 
-- **Treatment:** Taxable (10% GST), assuming the amount is GST-exclusive.
+- **Treatment:** Taxable (10% GST).
 
 - **Priority:** 99, checked last after R01 to R05. R99 is the fallback rule when no specific rule matches.
 
@@ -219,14 +224,14 @@
 - **Engine logic:**
   - Check R99 only if R01 to R05 have not already matched.
   - Classify the transaction as taxable.
-  - Calculate `expected_gst` as `net_amount` × 0.10.
+  - Calculate `expected_gst` for a taxable line per Calculation rules.
   - If `transaction_type` = `purchase` and `category` = `unknown`, set `credit_claimable` = `Review`.
   - If `transaction_type` = `purchase` and `category` is known, set `credit_claimable` = `Yes`. If `transaction_type` = `sale`, set `credit_claimable` = `N/A`.
   - Unknown categories and missing destination information are flagged separately by the quality checks.
 
 - **Assumptions (not modelled):**
   - Assume all transactions are made by a GST-registered client in the course of their business and meet the other requirements for taxable treatment unless a specific rule applies.
-  - Assume `net_amount` is GST-exclusive.
+  - GST amounts follow the Calculation rules, using `amounts_include_gst`.
   - Detailed GST credit eligibility, including supplier registration and creditable acquisition requirements, is handled separately in the GST credits section.
 
 - **Sources:**
@@ -236,39 +241,39 @@
 
 #### Examples
 
-| Case | transaction_type | category | destination_country | net_amount | Expected treatment | Expected GST | credit_claimable | Why |
-|---|---|---|---|---:|---|---:|---|---|
-| R99-1 | sale | stationery | AU | 100.00 | Taxable | 10.00 | N/A | R99: No preceding rule matches; default taxable treatment applies. |
-| R99-2 | sale | cosmetic_procedure | AU | 500.00 | Taxable | 50.00 | N/A | R99: No GST-free health rule matches; default taxable treatment applies. |
-| R99-3 | sale | unknown | AU | 100.00 | Taxable | 10.00 | N/A | R99: Default taxable treatment applies; unknown category is flagged by quality checks. |
-| R99-4 | purchase | unknown | AU | 100.00 | Taxable | 10.00 | Review | R99: Default taxable treatment applies; credit eligibility requires review. |
-| R99-5 | purchase | stationery | AU | 100.00 | Taxable | 10.00 | Yes | R99: Known taxable category; credit claimable, assuming a registered supplier. |
+| Case | transaction_type | category | destination_country | original_amount | amounts_include_gst | Expected treatment | Expected GST | credit_claimable | Why |
+|---|---|---|---|---:|---|---|---:|---|---|
+| R99-1 | sale | stationery | AU | 100.00 | false | Taxable | 10.00 | N/A | R99: No preceding rule matches; default taxable treatment applies. |
+| R99-2 | sale | cosmetic_procedure | AU | 500.00 | false | Taxable | 50.00 | N/A | R99: No GST-free health rule matches; default taxable treatment applies. |
+| R99-3 | sale | unknown | AU | 100.00 | false | Taxable | 10.00 | N/A | R99: Default taxable treatment applies; unknown category is flagged by quality checks. |
+| R99-4 | purchase | unknown | AU | 100.00 | false | Taxable | 10.00 | Review | R99: Default taxable treatment applies; credit eligibility requires review. |
+| R99-5 | purchase | stationery | AU | 100.00 | false | Taxable | 10.00 | Yes | R99: Known taxable category; credit claimable, assuming a registered supplier. |
 
 ## Calculation rules
 
 ### GST-exclusive amounts
 
-- **Formula:** `expected_gst` = `net_amount` × 0.10.
+- **Formula:** `expected_gst` = `original_amount` × 0.10.
 - **Explanation:** When an amount is GST-exclusive, GST is calculated as 10% of the amount.
 - **Source:** ATO, [Tax invoices](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/tax-invoices).
 
 **Example:**
 
-| net_amount | amount_type | Expected GST | Expected total |
+| original_amount | amounts_include_gst | Expected GST | Expected gross_amount |
 |---:|---|---:|---:|
-| 100.00 | GST-exclusive | 10.00 | 110.00 |
+| 100.00 | false | 10.00 | 110.00 |
 
 ### GST-inclusive amounts
 
-- **Formula:** `expected_gst` = `gross_amount` ÷ 11.
+- **Formula:** `expected_gst` = `original_amount` ÷ 11.
 - **Explanation:** A GST-inclusive price contains 110% of the original price: 100% net amount plus 10% GST. Therefore, GST represents 10/110, which simplifies to 1/11 of the total price.
 - **Source:** ATO, [Tax invoices](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/tax-invoices).
 
 **Example:**
 
-| gross_amount | amount_type | Expected GST | Expected net amount |
+| original_amount | amounts_include_gst | Expected GST | Expected net_amount |
 |---:|---|---:|---:|
-| 110.00 | GST-inclusive | 10.00 | 100.00 |
+| 110.00 | true | 10.00 | 100.00 |
 
 ### Non-taxable lines
 
@@ -278,9 +283,20 @@
 
 **Example:**
 
-| Description | gross_amount | Expected treatment | Expected GST | Expected net amount |
+| Description | original_amount (inclusive) | Expected treatment | Expected GST | Expected net_amount |
 |---|---:|---|---:|---:|
 | Basic food | 110.00 | GST-free | 0.00 | 110.00 |
+
+### Deriving net and gross amounts
+
+`net_amount` and `gross_amount` are engine outputs, worked out only after the treatment and supplier registration are known. The same $110 GST-inclusive amount is $100 net on a taxable line but $110 net on a GST-free line, so they can't be filled in at ingest. `original_amount` is always kept unchanged.
+
+### Credit notes
+
+- A credit note gets the same treatment as the line it reverses, with negative amounts.
+- Negative amounts are valid on credit notes and are only flagged on invoices (`negative_amount_on_invoice`).
+- Credit notes reduce the totals they would normally add to (G1, 1A or 1B).
+- Matching a credit note to its original invoice, and wider GST adjustments, are out of scope.
 
 ### Rounding
 
@@ -343,7 +359,8 @@ Category resolution determines which category is assigned to each transaction li
 ### Assumptions
 
 - Each tax code in `tax_codes.csv` maps to a single category.
-- Each supplier in `suppliers.csv` has a default category, where available.
+- Each supplier in `suppliers.csv` has a `default_category`, where available.
+- Client files send supplier names. Ingest keeps the name as received in `original_supplier` and matches it to `supplier_id` via `suppliers.csv`. An unmatched name is flagged `orphan_supplier`, and a blank one on a purchase `missing_supplier`.
 - Each supplier has a `multi_category` field indicating whether it regularly supplies goods or services across multiple categories.
 
 **Note:** This assumes client-specific tax code mappings are available. Real ERP tax codes may represent GST treatment rather than a specific category. For example, a `GST` or `FRE` tax code alone may not distinguish basic food from other goods. This assumption is listed in the Open questions.
@@ -352,9 +369,10 @@ Category resolution determines which category is assigned to each transaction li
 
 Use the following priority order:
 
-1. **Tax code:** If a tax code is available for the transaction line, use the category mapped to that tax code.
-2. **Supplier default:** If no tax code is available, use the supplier's default category, if one exists.
-3. **Unknown:** If neither a tax code nor a supplier default is available, assign `unknown`.
+1. **Tax code:** If the line has a tax code that exists in `tax_codes.csv`, use its category.
+   - A tax code that isn't in `tax_codes.csv` is treated as no tax code and flagged `unmapped_tax_code`.
+2. **Supplier default:** If there's no usable tax code, use the supplier's `default_category`, but only if the supplier has `multi_category` = `false`.
+3. **Unknown:** Otherwise, assign `unknown`. This includes lines from multi-category suppliers with no usable tax code, because their default can't be trusted (a supermarket's `basic_food` default would wrongly make hot chicken GST-free).
 
 ### Why the tax code takes priority
 
@@ -373,12 +391,13 @@ Record how each category was determined using the `category_source` field.
 | Value | Meaning |
 |---|---|
 | `tax_code` | Category determined from the transaction-line tax code |
-| `supplier_default` | Category determined from the supplier's default because no tax code was available |
-| `unknown` | Neither a tax code nor a supplier default was available |
+| `supplier_default` | Category determined from the supplier's `default_category` because no usable tax code was available |
+| `llm` | Category suggested by the LLM layer for an otherwise `unknown` line (later extension) |
+| `unknown` | No usable tax code, and no trustworthy supplier default |
 
 ### Handling unknown categories
 
-If neither a tax code nor a supplier default is available:
+If there's no usable tax code and no trustworthy supplier default:
 
 - Set `category` to `unknown`.
 - Set `category_source` to `unknown`.
@@ -410,12 +429,14 @@ For a single-category supplier, the disagreement is flagged, but the tax code st
 Tax codes used below (final list defined in `tax_codes.csv`):
 `TF` = `taxable_food`, `BF` = `basic_food`.
 
-| Case | tax_code | supplier_default | multi_category | Resolved category | category_source | Flag? |
+| Case | tax_code | default_category | multi_category | Resolved category | category_source | Flag? |
 |---|---|---|---|---|---|---|
 | CR-1 | `TF` | `basic_food` | true | `taxable_food` | `tax_code` | No: expected for a multi-category supplier |
 | CR-2 | blank | `stationery` | false | `stationery` | `supplier_default` | No |
 | CR-3 | blank | blank | N/A | `unknown` | `unknown` | Yes: unknown category |
 | CR-4 | `BF` | `stationery` | false | `basic_food` | `tax_code` | Yes: unexpected disagreement for a single-category supplier |
+| CR-5 | blank | `basic_food` | true | `unknown` | `unknown` | Yes: multi-category supplier default isn't used |
+| CR-6 | `ZZ` | `gst_free_medical` | false | `gst_free_medical` | `supplier_default` | Yes: `unmapped_tax_code` |
 
 ### Supplier configuration
 
@@ -517,6 +538,8 @@ This ensures that supplier eligibility, expected GST and data-quality checks rem
 
 ## BAS summary rules
 
+Rows with an `error`-severity quality issue (e.g. duplicate lines, invalid dates, missing amounts) get `excluded_from_bas` = true and are **excluded** from all BAS totals, then reported separately, so a duplicate line can't be counted twice. Credit notes are included as negative amounts.
+
 ### G1: Total sales
 
 **Definition:** Total value of sales, including taxable, GST-free and input-taxed sales.
@@ -525,6 +548,7 @@ This ensures that supplier eligibility, expected GST and data-quality checks rem
 ```sql
 G1 = SUM(gross_amount)
 WHERE transaction_type = 'sale'
+AND excluded_from_bas = false
 ```
 
 **Includes:** All sales, regardless of GST treatment, including exports.
@@ -542,6 +566,7 @@ WHERE transaction_type = 'sale'
 1A = SUM(expected_gst)
 WHERE transaction_type = 'sale'
 AND gst_treatment = 'taxable'
+AND excluded_from_bas = false
 ```
 
 **Includes:** GST calculated by the engine for taxable sales, using `expected_gst` as calculated under the Calculation rules.
@@ -561,6 +586,7 @@ AND gst_treatment = 'taxable'
 1B = SUM(expected_gst)
 WHERE transaction_type = 'purchase'
 AND credit_claimable = 'Yes'
+AND excluded_from_bas = false
 ```
 
 **Includes:** Purchases marked `Yes` after GST treatment and supplier registration checks, using `expected_gst` as calculated under the Calculation rules.
@@ -596,14 +622,14 @@ The unknown purchase still has provisional GST of $10.00 under R99, but it does 
 |---|---|---|---|
 | R03/R04 | Is hot roast chicken GST-free? | No. Hot takeaway chicken is taxable and should be categorised as `taxable_food`. | ATO, [Detailed food list](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/in-detail/your-industry/gst-and-food/detailed-food-list) |
 | R03/R04 | Is cold cooked chicken GST-free? | Yes. Cold cooked chicken is generally GST-free and should be categorised as `basic_food`. | ATO, [Detailed food list](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/in-detail/your-industry/gst-and-food/detailed-food-list) |
-| R03/R04 | Is warm fresh bread taxable? | No. Bread that is still warm because it has just been baked is generally GST-free, unless it falls into another taxable food category. | ATO, GST and food (TODO link) |
-| R03/R04 | Are hampers containing taxable and GST-free products entirely taxable? | No. A hamper of separate, individually packaged products is generally a mixed supply, with the value apportioned where needed. In the data, a hamper should be split into separate lines, one per product type, each with its own category. | ATO, Mixed GST status on food products (TODO link) |
+| R03/R04 | Is warm fresh bread taxable? | No. Bread that is still warm because it has just been baked is generally GST-free, unless it falls into another taxable food category. | ATO, GST and food (https://www.ato.gov.au/law/view/document?docid=GST%2FGSTR20018%2FNAT%2FATO%2F00001) |
+| R03/R04 | Are hampers containing taxable and GST-free products entirely taxable? | No. A hamper of separate, individually packaged products is generally a mixed supply, with the value apportioned where needed. In the data, a hamper should be split into separate lines, one per product type, each with its own category. | ATO, Mixed GST status on food products (https://www.ato.gov.au/law/view/document?docid=GST%2FGSTR20018%2FNAT%2FATO%2F00001) |
 | R03 | Are snacks, confectionery and soft drinks GST-free? | Many are taxable, e.g. chocolate, lollies, potato crisps and soft drinks. These should be categorised as `taxable_food`. | ATO, [Detailed food list](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/in-detail/your-industry/gst-and-food/detailed-food-list) |
 | R05 | Which medical services are GST-free? | Services for which a Medicare benefit is payable, or other services supplied by or on behalf of a medical practitioner or approved pathology practitioner that are generally accepted as necessary for appropriate treatment. | ATO, [Medical services](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/in-detail/your-industry/gst-and-health/medical-services) |
 | R05 | Does a medical service always need to be provided by a recognised medical professional? | No. If a Medicare benefit is payable, the service can qualify without meeting the provider requirement in the second test. | ATO, [Medical services](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/in-detail/your-industry/gst-and-health/medical-services) |
 | R05 | Which other health services can be GST-free? | Listed services such as physiotherapy, psychology, dentistry and chiropractic, provided by a recognised professional and considered necessary for appropriate treatment. | ATO, [Other health services](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/in-detail/your-industry/gst-and-health/other-health-services) |
 | R05 | Are cosmetic procedures GST-free? | Not generally, where no Medicare benefit is payable and the procedure is performed mainly to improve appearance. | ATO, [Medical services](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/in-detail/your-industry/gst-and-health/medical-services) |
-| R05 | Are health-related products automatically GST-free? | No. Products sold separately generally follow their own GST rules. Some goods supplied as part of a GST-free health service may qualify if they meet specific conditions. | ATO, GST and health (TODO link) |
+| R05 | Are health-related products automatically GST-free? | No. Products sold separately generally follow their own GST rules. Some goods supplied as part of a GST-free health service may qualify if they meet specific conditions. | ATO, GST and health (https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/in-detail/your-industry/gst-and-health/goods-supplied-as-part-of-a-gst-free-health-service) |
 | R05 | Is remedial massage GST-free? | Not when supplied on its own. It may qualify when supplied as part of an eligible listed health service, such as physiotherapy. | ATO, [Other health services](https://www.ato.gov.au/businesses-and-organisations/gst-excise-and-indirect-taxes/gst/in-detail/your-industry/gst-and-health/other-health-services) |
 
 ## Open questions for a tax SME
