@@ -1,0 +1,28 @@
+# Client mapping template
+# Copy this file to config/<client_id>_mapping.yaml and fill in every field.
+# Standard column definitions: docs/data_dictionary.md
+
+client_id:            # short unique name, e.g. client_c
+file:                 # path to the raw file, e.g. data/raw/client_c.csv
+amounts_include_gst:  # true if amounts include GST, false if exclusive
+date_format:          # Python date format, e.g. "%Y-%m-%d" or "%d/%m/%Y"
+
+# Raw column name in the client's file -> standard column name.
+# Put the client's column name on the left. Remove optional lines the client doesn't send.
+columns:
+  RAW_INVOICE_ID: invoice_id                  # required
+  RAW_LINE_NO: line_no                        # required
+  RAW_DOCUMENT_TYPE: document_type            # optional, defaults to invoice
+  RAW_TRANSACTION_TYPE: transaction_type      # required
+  RAW_SUPPLIER: original_supplier             # optional, needed for purchases
+  RAW_TAX_CODE: original_tax_code             # optional
+  RAW_DESCRIPTION: description                # optional
+  RAW_AMOUNT: original_amount                 # required
+  RAW_GST_CHARGED: gst_charged                # optional
+  RAW_INVOICE_DATE: invoice_date              # required
+  RAW_DESTINATION: original_destination       # optional
+
+# raw values -> standard values
+value_maps:
+  document_type: {RAW_INVOICE_VALUE: invoice, RAW_CREDIT_VALUE: credit_note}
+  transaction_type: {RAW_SALE_VALUE: sale, RAW_PURCHASE_VALUE: purchase}
