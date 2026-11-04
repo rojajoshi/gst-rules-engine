@@ -1,0 +1,23 @@
+client_id: client_a
+file: data/raw/client_a.csv
+amounts_include_gst: false
+date_format: "%Y-%m-%d"
+
+# raw column name -> standard column name
+columns:
+  InvoiceNo: invoice_id
+  LineNo: line_no
+  DocType: document_type
+  TxnType: transaction_type
+  Vendor: original_supplier
+  TaxCd: original_tax_code
+  Desc: description
+  NetAmt: original_amount
+  GSTAmt: gst_charged
+  InvDate: invoice_date
+  ShipTo: original_destination
+
+# raw values -> standard values
+value_maps:
+  document_type: {INV: invoice, CRN: credit_note}
+  transaction_type: {S: sale, P: purchase}
