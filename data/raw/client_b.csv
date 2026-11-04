@@ -1,0 +1,163 @@
+inv_id,line,doc,type,supplier_name,code,item,total_inc_gst,gst,date,country
+B-INV-0001,1,invoice,purchase,Fresh Fields Grocers,BF,Full cream milk 2L,149.88,0.00,01/09/2026,AU
+B-INV-0001,2,invoice,purchase,Fresh Fields Grocers,TF,Chocolate biscuits,48.69,4.43,01/09/2026,AU
+B-INV-0002,1,invoice,purchase,Fresh Fields Grocers,BF,Fresh bananas 1kg,38.59,0.00,09/07/2026,AU
+B-INV-0002,2,invoice,purchase,Fresh Fields Grocers,TF,Chocolate biscuits,26.31,2.39,09/07/2026,AU
+B-INV-0002,3,invoice,purchase,Fresh Fields Grocers,BF,Brown rice 5kg,105.31,0.00,09/07/2026,AU
+B-INV-0002,4,invoice,purchase,Fresh Fields Grocers,TF,Hot roast chicken,16.76,1.52,31/02/2026,AU
+B-INV-0003,1,invoice,purchase,Corner Print Shop,ST,Business cards printing,86.79,0.00,15/07/2026,AU
+B-INV-0004,1,invoice,sale,,BF,Brown rice 5kg,120.37,0.00,27/07/2026,AU
+B-INV-0004,2,invoice,sale,,BF,Cold cooked chicken,128.94,0.00,27/07/2026,AU
+B-INV-0004,3,invoice,sale,,SW,Accounting software licence,707.33,64.30,27/07/2026,AU
+B-INV-0004,4,invoice,sale,,ST,A4 paper 5 reams,177.40,16.13,27/07/2026,AU
+B-INV-0005,1,invoice,purchase,Fresh Fields Grocers,TF,Soft drink carton,24.18,2.20,19/08/2026,AU
+B-INV-0005,2,invoice,purchase,Fresh Fields Grocers,TF,Hot roast chicken,,2.37,19/08/2026,AU
+B-INV-0005,3,invoice,purchase,Fresh Fields Grocers,BF,Free range eggs 12pk,112.29,0.00,19/08/2026,AU
+B-INV-0006,1,invoice,purchase,Fresh Fields Grocers,BF,Free range eggs 12pk,25.51,0.00,29/09/2026,AU
+B-INV-0006,2,invoice,purchase,Fresh Fields Grocers,BF,Brown rice 5kg,112.25,0.00,29/09/2026,AU
+B-INV-0006,3,invoice,purchase,Fresh Fields Grocers,BF,Fresh bananas 1kg,31.92,0.00,29/09/2026,AU
+B-INV-0007,1,invoice,purchase,PaperTrail Office Supplies,ST,Printer toner,263.49,23.95,09/09/2026,AU
+B-INV-0008,1,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,239.74,0.00,24/07/2026,AU
+B-INV-0008,2,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,117.26,0.00,24/07/2026,AU
+B-INV-0008,3,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,192.96,0.00,24/07/2026,AU
+B-INV-0009,1,invoice,purchase,Brew & Bite Cafe,TF,Hot roast chicken,41.67,3.79,24/07/2026,AU
+B-INV-0009,2,invoice,purchase,Brew & Bite Cafe,TF,Soft drink carton,36.50,3.32,24/07/2026,AU
+B-INV-0009,3,invoice,purchase,Brew & Bite Cafe,TF,Catering platter,22.40,2.04,24/07/2026,AU
+B-INV-0010,1,invoice,sale,,TF,Catering platter,46.74,4.25,28/09/2026,AU
+B-INV-0011,1,invoice,purchase,Brew & Bite Cafe,TF,Catering platter,27.27,2.48,06/08/2026,AU
+B-INV-0011,2,invoice,purchase,Brew & Bite Cafe,TF,Chocolate biscuits,45.62,4.15,06/08/2026,AU
+B-INV-0011,3,invoice,purchase,Brew & Bite Cafe,TF,Flat white x10,18.28,1.66,06/08/2026,AU
+B-INV-0012,1,invoice,purchase,Brew & Bite Cafe,TF,Flat white x10,44.84,4.08,28/07/2026,AU
+B-INV-0012,2,invoice,purchase,Brew & Bite Cafe,TF,Catering platter,44.51,4.05,28/07/2026,AU
+B-INV-0013,1,invoice,purchase,CloudForge Software,SW,Accounting software licence,25000.00,2272.73,03/09/2026,AU
+B-INV-0013,2,invoice,purchase,CloudForge Software,BF,Design software seat,1233.55,0.00,03/09/2026,AU
+B-INV-0013,3,invoice,purchase,CloudForge Software,SW,Cloud storage annual plan,1136.75,103.34,03/09/2026,AU
+B-INV-0014,1,invoice,sale,,TF,Hot roast chicken,60.38,5.49,27/08/2026,AU
+B-INV-0014,2,invoice,sale,,BF,Cold cooked chicken,85.47,0.00,27/08/2026,AU
+B-INV-0014,3,invoice,sale,,TF,Flat white x10,56.09,5.10,27/08/2026,AU
+B-INV-0014,4,invoice,sale,,SW,Cloud storage annual plan,1895.91,172.36,27/08/2026,AU
+B-INV-0015,1,invoice,sale,,ST,A4 paper 5 reams,39.12,3.56,15/08/2026,AU
+B-INV-0016,1,invoice,sale,,ST,Business cards printing,250.75,22.80,26/07/2026,AU
+B-INV-0016,2,invoice,sale,,ST,Whiteboard markers,276.77,25.16,26/07/2026,AU
+B-INV-0017,1,invoice,sale,,ST,Whiteboard markers,58.86,5.35,17/09/2026,AU
+B-INV-0017,2,invoice,sale,,SW,Accounting software licence,2122.26,192.93,17/09/2026,AU
+B-INV-0017,3,invoice,sale,,BF,Wholemeal bread loaf,120.37,0.00,17/09/2026,AU
+B-INV-0018,1,invoice,purchase,CloudForge Software,SW,Design software seat,1055.26,95.93,29/07/2026,AU
+B-INV-0019,1,invoice,sale,,ST,Whiteboard markers,72.44,6.59,28/08/2026,AU
+B-INV-0019,2,invoice,sale,,ST,Business cards printing,279.59,25.42,28/08/2026,AU
+B-INV-0019,3,invoice,sale,,BF,Fresh bananas 1kg,92.28,0.00,28/08/2026,AU
+B-INV-0020,1,invoice,purchase,Brew & Bite Cafe,TF,Soft drink carton,38.69,3.52,16/09/2026,AU
+B-INV-0020,2,invoice,purchase,Brew & Bite Cafe,TF,Flat white x10,20.46,1.86,16/09/2026,AU
+B-INV-0020,3,invoice,purchase,Brew & Bite Cafe,TF,Hot roast chicken,53.89,4.90,16/09/2026,AU
+B-INV-0021,1,invoice,purchase,Brew & Bite Cafe,TF,Flat white x10,25.45,2.31,09/08/2026,AU
+B-INV-0021,2,invoice,purchase,Brew & Bite Cafe,TF,Soft drink carton,18.71,1.70,09/08/2026,AU
+B-INV-0021,3,invoice,purchase,Brew & Bite Cafe,TF,Hot roast chicken,28.03,2.55,09/08/2026,AU
+B-INV-0021,4,invoice,purchase,Brew & Bite Cafe,TF,Flat white x10,40.77,3.71,09/08/2026,AU
+B-INV-0022,1,invoice,purchase,Fresh Fields Grocers,BF,Brown rice 5kg,51.68,0.00,30/09/2026,AU
+B-INV-0022,2,invoice,purchase,Fresh Fields Grocers,TF,Catering platter,48.06,4.37,30/09/2026,AU
+B-INV-0022,3,invoice,purchase,Fresh Fields Grocers,TF,Chocolate biscuits,49.68,4.52,30/09/2026,AU
+B-INV-0023,1,invoice,sale,,SW,Design software seat,962.92,87.54,09/09/2026,AU
+B-INV-0023,2,invoice,sale,,BF,Free range eggs 12pk,82.73,0.00,09/09/2026,AU
+B-INV-0023,3,invoice,sale,,BF,Wholemeal bread loaf,130.76,0.00,09/09/2026,AU
+B-INV-0024,1,invoice,purchase,PaperTrail Office Supplies,ST,Printer toner,283.89,25.81,16/08/2026,AU
+B-INV-0024,2,invoice,purchase,PaperTrail Office Supplies,ST,Printer toner,175.64,15.97,16/08/2026,AU
+B-INV-0025,1,invoice,sale,,BF,Brown rice 5kg,102.01,0.00,17/09/2026,AU
+B-INV-0025,2,invoice,sale,,SW,Accounting software licence,963.66,87.61,17/09/2026,AU
+B-INV-0025,3,invoice,sale,,SW,Accounting software licence,376.42,34.22,17/09/2026,AU
+B-INV-0026,1,invoice,purchase,Riverside Medical Clinic,ZZ,GP consultation,173.71,0.00,25/08/2026,AU
+B-INV-0026,2,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,61.39,0.00,25/08/2026,AU
+B-INV-0026,3,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,193.58,0.00,25/08/2026,AU
+B-INV-0026,4,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,180.42,0.00,25/08/2026,AU
+B-INV-0027,1,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,204.67,0.00,29/09/2026,AU
+B-INV-0027,2,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,196.93,0.00,29/09/2026,AU
+B-INV-0027,3,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,243.01,0.00,29/09/2026,AU
+B-INV-0027,4,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,224.69,0.00,29/09/2026,AU
+B-INV-0028,1,invoice,purchase,Swift Payments,PP,Merchant service fee,131.52,11.96,07/07/2026,AU
+B-INV-0029,1,invoice,purchase,Fresh Fields Grocers,TF,Soft drink carton,30.77,2.80,27/09/2026,AU
+B-INV-0029,2,invoice,purchase,Fresh Fields Grocers,TF,Chocolate biscuits,53.63,4.88,27/09/2026,AU
+B-INV-0029,3,invoice,purchase,Fresh Fields Grocers,BF,Fresh bananas 1kg,36.10,0.00,27/09/2026,AU
+B-INV-0030,1,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,247.25,0.00,04/07/2026,AU
+B-INV-0030,2,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,245.80,0.00,04/07/2026,AU
+B-INV-0030,3,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,138.20,0.00,04/07/2026,AU
+B-INV-0030,4,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,76.12,0.00,04/07/2026,AU
+B-INV-0031,1,invoice,purchase,Northbridge Bank,FS,Overdraft interest,413.07,0.00,21/07/2026,AU
+B-INV-0031,2,invoice,purchase,Northbridge Bank,FS,Loan interest,28.12,0.00,21/07/2026,AU
+B-INV-0031,3,invoice,purchase,Northbridge Bank,FS,Account keeping fee,33.86,0.00,21/07/2026,AU
+B-INV-0032,1,invoice,purchase,Swift Payments,PP,Card terminal fee,175.20,15.93,03/08/2026,AU
+B-INV-0033,1,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,69.30,0.00,01/07/2026,AU
+B-INV-0033,2,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,104.56,0.00,01/07/2026,AU
+B-INV-0033,3,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,223.04,0.00,01/07/2026,AU
+B-INV-0033,4,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,60.86,0.00,01/07/2026,AU
+B-INV-0034,1,invoice,purchase,Fresh Fields Grocers,TF,Catering platter,60.83,5.53,17/08/2026,AU
+B-INV-0034,2,invoice,purchase,Fresh Fields Grocers,TF,Chocolate biscuits,28.26,2.57,17/08/2026,AU
+B-INV-0034,3,invoice,purchase,Fresh Fields Grocers,BF,Brown rice 5kg,65.24,0.00,17/08/2026,AU
+B-INV-0035,1,invoice,sale,,SW,Cloud storage annual plan,843.92,76.72,10/09/2026,AU
+B-INV-0035,2,invoice,sale,,TF,Soft drink carton,25.78,2.34,10/09/2026,AU
+B-INV-0035,3,invoice,sale,,TF,Hot roast chicken,33.43,3.04,10/09/2026,AU
+B-INV-0035,4,invoice,sale,,SW,Design software seat,1839.89,167.26,10/09/2026,AU
+B-INV-0036,1,invoice,sale,,TF,Hot roast chicken,44.96,4.09,19/08/2026,AU
+B-INV-0036,2,invoice,sale,,ST,Business cards printing,237.88,21.63,19/08/2026,AU
+B-INV-0036,3,invoice,sale,,TF,Catering platter,35.93,3.27,19/08/2026,AU
+B-INV-0036,4,invoice,sale,,SW,Design software seat,1259.24,114.48,19/08/2026,AU
+B-INV-0037,1,invoice,sale,,ST,Printer toner,24.95,0.00,01/08/2026,JP
+B-INV-0038,1,invoice,purchase,Northbridge Bank,FS,Overdraft interest,215.99,0.00,11/08/2026,AU
+B-INV-0038,2,invoice,purchase,Northbridge Bank,FS,Overdraft interest,378.46,0.00,11/08/2026,AU
+B-INV-0038,3,invoice,purchase,Northbridge Bank,FS,Overdraft interest,275.02,0.00,11/08/2026,AU
+B-INV-0038,4,invoice,purchase,Northbridge Bank,FS,Loan interest,449.53,0.00,11/08/2026,AU
+B-INV-0039,1,invoice,sale,,SW,Cloud storage annual plan,1718.13,156.19,05/08/2026,AU
+B-INV-0040,1,invoice,purchase,Fresh Fields Grocers,BF,Fresh bananas 1kg,51.38,0.00,20/07/2026,AU
+B-INV-0040,2,invoice,purchase,Fresh Fields Grocers,BF,Wholemeal bread loaf,40.21,0.00,20/07/2026,AU
+B-INV-0040,3,invoice,purchase,Fresh Fields Grocers,TF,Hot roast chicken,30.53,2.78,20/07/2026,AU
+B-INV-0041,1,invoice,purchase,Swift Payments,PP,Card terminal fee,108.80,9.89,21/08/2026,AU
+B-INV-0041,2,invoice,purchase,Swift Payments,PP,Merchant service fee,218.96,19.91,21/08/2026,AU
+B-INV-0041,3,invoice,purchase,Swift Payments,PP,Merchant service fee,155.57,14.14,21/08/2026,AU
+B-INV-0042,1,invoice,purchase,Swift Payments,PP,Merchant service fee,58.66,5.33,13/09/2026,AU
+B-INV-0042,2,invoice,purchase,Swift Payments,PP,Card terminal fee,42.17,3.83,13/09/2026,AU
+B-INV-0043,1,invoice,purchase,Swift Payments,PP,Card terminal fee,107.73,9.79,09/08/2026,AU
+B-INV-0043,2,invoice,purchase,Swift Payments,PP,Card terminal fee,29.10,2.65,09/08/2026,AU
+B-INV-0043,3,invoice,purchase,Swift Payments,PP,Card terminal fee,42.39,3.85,09/08/2026,AU
+B-INV-0044,1,invoice,sale,,SW,Design software seat,1177.35,0.00,28/07/2026,SG
+B-INV-0045,1,invoice,sale,,ST,Business cards printing,40.65,3.70,29/07/2026,AU
+B-INV-0045,2,invoice,sale,,TF,Soft drink carton,26.75,2.43,29/07/2026,AU
+B-INV-0045,3,invoice,sale,,SW,Accounting software licence,1067.01,97.00,29/07/2026,AU
+B-INV-0045,4,invoice,sale,,SW,Accounting software licence,333.10,30.28,29/07/2026,AU
+B-INV-0046,1,invoice,purchase,Fresh Fields Grocers,BF,Free range eggs 12pk,83.64,0.00,11/07/2026,AU
+B-INV-0047,1,invoice,purchase,PaperTrail Office Supplies,ST,Business cards printing,281.09,25.55,03/07/2026,AU
+B-INV-0047,2,invoice,purchase,PaperTrail Office Supplies,ST,A4 paper 5 reams,102.19,9.29,03/07/2026,AU
+B-INV-0048,1,invoice,sale,,SW,Design software seat,756.83,68.80,30/07/2026,AU
+B-INV-0048,2,invoice,sale,,SW,Cloud storage annual plan,2069.82,188.17,30/07/2026,AU
+B-INV-0048,3,invoice,sale,,ST,Business cards printing,163.92,14.90,30/07/2026,AU
+B-INV-0048,4,invoice,sale,,TF,Chocolate biscuits,23.95,2.18,30/07/2026,AU
+B-INV-0049,1,invoice,sale,,BF,Fresh bananas 1kg,24.07,0.00,05/07/2026,SG
+B-INV-0050,1,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,168.15,0.00,15/07/2026,AU
+B-INV-0051,1,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,222.14,0.00,22/07/2026,AU
+B-INV-0051,2,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,177.63,0.00,22/07/2026,AU
+B-INV-0051,3,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,206.86,0.00,22/07/2026,AU
+B-INV-0052,1,invoice,sale,,TF,Catering platter,46.37,4.22,30/09/2026,AU
+B-INV-0052,2,invoice,sale,,BF,Brown rice 5kg,67.00,0.00,30/09/2026,AU
+B-INV-0052,3,invoice,sale,,TF,Soft drink carton,32.26,2.93,30/09/2026,AU
+B-INV-0052,4,invoice,sale,,TF,Chocolate biscuits,46.23,4.20,30/09/2026,AU
+B-INV-0053,1,invoice,purchase,CloudForge Software,SW,Accounting software licence,476.06,43.28,28/07/2026,AU
+B-INV-0054,1,invoice,sale,,ST,Business cards printing,223.05,0.00,18/09/2026,US
+B-INV-0055,1,invoice,purchase,Northbridge Bank,FS,Loan interest,446.11,0.00,04/09/2026,AU
+B-INV-0055,2,invoice,purchase,Northbridge Bank,FS,Account keeping fee,71.75,0.00,04/09/2026,AU
+B-INV-0055,3,invoice,purchase,Northbridge Bank,FS,Overdraft interest,80.42,0.00,04/09/2026,AU
+B-INV-0055,4,invoice,purchase,Northbridge Bank,FS,Overdraft interest,94.74,0.00,04/09/2026,AU
+B-INV-0056,1,invoice,purchase,Northbridge Bank,FS,Loan interest,18.12,0.00,12/09/2026,AU
+B-INV-0056,2,invoice,purchase,Northbridge Bank,FS,Account keeping fee,496.61,0.00,12/09/2026,AU
+B-INV-0056,3,invoice,purchase,Northbridge Bank,FS,Account keeping fee,72.19,0.00,12/09/2026,AU
+B-INV-0057,1,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,178.14,0.00,22/08/2026,AU
+B-INV-0057,2,invoice,purchase,Riverside Medical Clinic,MED,Pathology tests,111.91,0.00,22/08/2026,AU
+B-INV-0057,3,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,172.97,0.00,22/08/2026,AU
+B-INV-0057,4,invoice,purchase,Riverside Medical Clinic,MED,GP consultation,116.00,0.00,22/08/2026,AU
+B-INV-0058,1,invoice,purchase,Fresh Fields Grocers,BF,Free range eggs 12pk,50.07,0.00,31/08/2026,AU
+B-INV-0059,1,invoice,sale,,ST,Whiteboard markers,144.02,13.09,16/09/2026,AU
+B-INV-0059,2,invoice,sale,,BF,Cold cooked chicken,114.35,0.00,16/09/2026,AU
+B-INV-0059,3,invoice,sale,,BF,Free range eggs 12pk,118.59,0.00,16/09/2026,AU
+B-INV-0059,4,invoice,sale,,TF,Soft drink carton,37.26,3.39,16/09/2026,AU
+B-INV-0060,1,invoice,sale,,SW,Cloud storage annual plan,1092.88,99.35,24/09/2026,AU
+B-INV-0060,2,invoice,sale,,BF,Full cream milk 2L,135.66,0.00,24/09/2026,AU
+B-INV-0060,3,invoice,sale,,TF,Flat white x10,50.29,4.57,24/09/2026,AU
+B-INV-9001,1,invoice,purchase,PaperTrail Office Supplies,ST,Whiteboard markers,10.05,0.92,14/08/2026,AU
+B-INV-9001,2,invoice,purchase,PaperTrail Office Supplies,ST,Whiteboard markers,10.05,0.91,14/08/2026,AU
+B-INV-9001,3,invoice,purchase,PaperTrail Office Supplies,ST,Whiteboard markers,10.05,0.91,14/08/2026,AU

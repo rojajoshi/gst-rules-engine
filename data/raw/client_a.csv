@@ -1,0 +1,149 @@
+InvoiceNo,LineNo,DocType,TxnType,Vendor,TaxCd,Desc,NetAmt,GSTAmt,InvDate,ShipTo
+A-INV-0001,1,INV,P,Riverside Medical Clinic,MED,Pathology tests,192.50,0.00,2026-07-09,AU
+A-INV-0001,2,INV,P,Riverside Medical Clinic,MED,Pathology tests,77.89,0.00,2026-07-09,AU
+A-INV-0001,3,INV,P,Riverside Medical Clinic,MED,Pathology tests,204.62,0.00,2026-07-09,AU
+A-INV-0001,4,INV,P,Riverside Medical Clinic,MED,Pathology tests,209.35,0.00,2026-07-09,AU
+A-INV-0002,1,INV,P,Northbridge Bank,FS,Overdraft interest,464.11,0.00,2026-07-12,AU
+A-INV-0002,2,INV,P,Northbridge Bank,FS,Account keeping fee,413.15,0.00,2026-07-12,AU
+A-INV-0002,3,INV,P,Northbridge Bank,FS,Account keeping fee,227.27,0.00,2026-07-12,AU
+A-INV-0003,1,INV,P,Fresh Fields Grocers,TF,Soft drink carton,43.42,4.34,2026-07-21,AU
+A-INV-0003,2,INV,P,Fresh Fields Grocers,BF,Cold cooked chicken,66.09,0.00,2026-07-21,AU
+A-INV-0003,3,INV,P,Fresh Fields Grocers,BF,Brown rice 5kg,136.11,0.00,2026-07-21,AU
+A-INV-0003,4,INV,P,Fresh Fields Grocers,TF,Chocolate biscuits,23.76,2.38,2026-07-21,AU
+A-INV-0004,1,INV,S,,,Chocolate biscuits,48.51,4.85,2026-08-03,AU
+A-INV-0004,2,INV,S,,SW,Design software seat,853.90,85.39,2026-08-03,AU
+A-INV-0005,1,INV,P,Swift Payments,PP,Merchant service fee,43.39,7.34,2026-09-22,AU
+A-INV-0005,2,INV,P,Swift Payments,PP,Merchant service fee,105.63,10.56,2026-09-22,AU
+A-INV-0006,1,INV,P,Riverside Medical Clinic,MED,Pathology tests,218.21,0.00,2026-07-21,AU
+A-INV-0006,2,INV,P,Riverside Medical Clinic,MED,Pathology tests,119.35,0.00,2026-07-21,AU
+A-INV-0006,3,INV,P,Riverside Medical Clinic,MED,GP consultation,218.13,0.00,2026-07-21,AU
+A-INV-0006,4,INV,P,Riverside Medical Clinic,MED,Pathology tests,133.62,0.00,2026-07-21,AU
+A-INV-0007,1,CRN,P,CloudForge Software,SW,Accounting software licence,-150.00,-15.00,2026-09-21,AU
+A-INV-0007,2,INV,P,CloudForge Software,SW,Design software seat,312.52,31.25,2026-09-21,AU
+A-INV-0008,1,INV,P,CloudForge Software,SW,Cloud storage annual plan,1627.24,162.72,2026-09-11,AU
+A-INV-0008,2,INV,P,CloudForge Software,SW,Cloud storage annual plan,1266.86,126.69,2026-09-11,AU
+A-INV-0009,1,INV,S,,TF,Catering platter,40.44,4.04,2026-07-04,AU
+A-INV-0010,1,INV,P,PaperTrail Office Supplies,ST,Whiteboard markers,9500.00,950.00,2026-07-08,AU
+A-INV-0010,2,INV,P,PaperTrail Office Supplies,ST,Whiteboard markers,12000.00,1200.00,2026-07-08,AU
+A-INV-0010,3,INV,P,Mystery Traders Pty Ltd,ST,A4 paper 5 reams,142.28,14.23,2026-07-08,AU
+A-INV-0010,4,INV,P,PaperTrail Office Supplies,ST,Printer toner,80.08,8.01,2026-07-08,AU
+A-INV-0011,1,INV,P,Brew & Bite Cafe,TF,Soft drink carton,-45.00,-4.50,2026-08-07,AU
+A-INV-0012,1,INV,S,,TF,Soft drink carton,50.28,5.03,2026-07-26,AU
+A-INV-0012,2,INV,S,,TF,Catering platter,33.29,3.33,2026-07-26,
+A-INV-0013,1,INV,S,,ST,Whiteboard markers,222.26,22.23,2026-09-13,AU
+A-INV-0013,2,INV,S,,SW,Design software seat,574.16,57.42,2026-09-13,AU
+A-INV-0014,1,INV,S,,TF,Flat white x10,32.15,3.22,2026-08-16,AU
+A-INV-0014,2,INV,S,,SW,Cloud storage annual plan,1371.48,137.15,2026-08-16,Australia
+A-INV-0015,1,INV,S,,ST,Printer toner,274.40,27.44,2026-08-03,AU
+A-INV-0015,2,INV,S,,TF,Chocolate biscuits,26.96,2.70,2026-08-03,AU
+A-INV-0016,1,INV,P,CloudForge Software,SW,Design software seat,1063.91,106.39,2026-09-28,AU
+A-INV-0016,2,INV,P,CloudForge Software,SW,Accounting software licence,463.86,46.39,2026-09-28,AU
+A-INV-0017,1,INV,P,CloudForge Software,SW,Accounting software licence,820.13,82.01,2026-08-11,AU
+A-INV-0017,2,INV,P,CloudForge Software,SW,Cloud storage annual plan,1284.67,128.47,2026-08-11,AU
+A-INV-0017,3,INV,P,CloudForge Software,SW,Accounting software licence,1756.24,175.62,2026-08-11,AU
+A-INV-0017,4,INV,P,CloudForge Software,SW,Cloud storage annual plan,1589.48,158.95,2026-08-11,AU
+A-INV-0018,1,INV,P,CloudForge Software,SW,Accounting software licence,1292.97,129.30,2026-09-05,AU
+A-INV-0018,2,INV,P,CloudForge Software,SW,Cloud storage annual plan,443.56,44.36,2026-09-05,AU
+A-INV-0019,1,INV,S,,ST,Printer toner,60.47,6.05,2026-09-08,AU
+A-INV-0019,2,INV,S,,TF,Hot roast chicken,41.44,4.14,2026-09-08,AU
+A-INV-0020,1,INV,P,Corner Print Shop,ST,Whiteboard markers,117.12,11.71,2026-09-12,AU
+A-INV-0021,1,INV,S,,SW,Cloud storage annual plan,1630.65,163.07,2026-08-26,AU
+A-INV-0021,2,INV,S,,ST,A4 paper 5 reams,156.26,15.63,2026-08-26,AU
+A-INV-0021,3,INV,S,,TF,Catering platter,57.20,5.72,2026-08-26,AU
+A-INV-0022,1,INV,P,,PP,Merchant service fee,79.68,7.97,2026-07-15,AU
+A-INV-0022,2,INV,P,Swift Payments,PP,Card terminal fee,113.72,11.37,2026-07-15,AU
+A-INV-0022,3,INV,P,Swift Payments,PP,Merchant service fee,23.89,2.39,2026-07-15,AU
+A-INV-0023,1,INV,P,PaperTrail Office Supplies,ST,A4 paper 5 reams,175.13,17.51,2026-08-03,AU
+A-INV-0023,2,INV,P,PaperTrail Office Supplies,ST,Whiteboard markers,50.40,5.04,2026-08-03,AU
+A-INV-0023,3,INV,P,PaperTrail Office Supplies,ST,Whiteboard markers,98.75,9.88,2026-08-03,AU
+A-INV-0023,4,INV,P,PaperTrail Office Supplies,ST,Whiteboard markers,204.64,20.46,2026-08-03,AU
+A-INV-0024,1,INV,P,Fresh Fields Grocers,TF,Soft drink carton,25.36,2.54,2026-09-05,AU
+A-INV-0024,2,INV,P,Fresh Fields Grocers,BF,Full cream milk 2L,92.13,0.00,2026-09-05,AU
+A-INV-0025,1,INV,P,Riverside Medical Clinic,MED,Pathology tests,120.26,0.00,2026-08-20,AU
+A-INV-0025,2,INV,P,Riverside Medical Clinic,MED,Pathology tests,241.05,0.00,2026-08-20,AU
+A-INV-0026,1,INV,P,Northbridge Bank,FS,Loan interest,468.66,0.00,2026-07-27,AU
+A-INV-0026,2,INV,P,Northbridge Bank,FS,Loan interest,32.01,0.00,2026-07-27,AU
+A-INV-0026,3,INV,P,Northbridge Bank,FS,Overdraft interest,223.20,0.00,2026-07-27,AU
+A-INV-0026,4,INV,P,Northbridge Bank,FS,Overdraft interest,446.92,0.00,2026-07-27,AU
+A-INV-0027,1,INV,P,Brew & Bite Cafe,TF,Soft drink carton,38.35,3.84,2026-07-09,AU
+A-INV-0027,2,INV,P,Brew & Bite Cafe,TF,Hot roast chicken,29.22,2.92,2026-07-09,AU
+A-INV-0027,3,INV,P,Brew & Bite Cafe,TF,Chocolate biscuits,44.77,4.48,2026-07-09,AU
+A-INV-0028,1,INV,S,,SW,Accounting software licence,1892.58,189.26,2026-08-07,AU
+A-INV-0028,2,INV,S,,BF,Fresh bananas 1kg,35.96,0.00,2026-08-07,AU
+A-INV-0029,1,INV,S,,SW,Cloud storage annual plan,1786.76,178.68,2026-07-07,AU
+A-INV-0029,2,INV,S,,ST,A4 paper 5 reams,106.89,10.69,2026-07-07,AU
+A-INV-0029,3,INV,S,,BF,Cold cooked chicken,146.34,0.00,2026-07-07,AU
+A-INV-0029,4,INV,S,,SW,Cloud storage annual plan,544.63,54.46,2026-07-07,AU
+A-INV-0030,1,INV,S,,ST,Whiteboard markers,54.11,5.41,2026-09-24,AU
+A-INV-0031,1,INV,P,Swift Payments,PP,Card terminal fee,55.96,5.60,2026-07-28,AU
+A-INV-0031,2,INV,P,Swift Payments,PP,Merchant service fee,164.74,16.47,2026-07-28,AU
+A-INV-0031,3,INV,P,Swift Payments,PP,Card terminal fee,153.02,15.30,2026-07-28,AU
+A-INV-0032,1,INV,S,,ST,Printer toner,104.27,10.43,2026-09-14,AU
+A-INV-0033,1,INV,P,Northbridge Bank,FS,Overdraft interest,150.36,0.00,2026-07-13,AU
+A-INV-0033,2,INV,P,Northbridge Bank,FS,Account keeping fee,463.16,0.00,2026-07-13,AU
+A-INV-0034,1,INV,P,CloudForge Software,SW,Design software seat,480.03,48.00,2026-07-03,AU
+A-INV-0035,1,INV,P,Corner Print Shop,ST,A4 paper 5 reams,186.89,0.00,2026-07-13,AU
+A-INV-0036,1,INV,P,Riverside Medical Clinic,MED,Pathology tests,209.11,0.00,2026-09-24,AU
+A-INV-0036,2,INV,P,Riverside Medical Clinic,MED,GP consultation,80.74,0.00,2026-09-24,AU
+A-INV-0037,1,INV,P,Riverside Medical Clinic,MED,GP consultation,160.85,0.00,2026-07-27,AU
+A-INV-0037,2,INV,P,Riverside Medical Clinic,MED,Pathology tests,175.14,0.00,2026-07-27,AU
+A-INV-0037,3,INV,P,Riverside Medical Clinic,MED,Pathology tests,174.59,0.00,2026-07-27,AU
+A-INV-0037,4,INV,P,Riverside Medical Clinic,MED,GP consultation,138.39,0.00,2026-07-27,AU
+A-INV-0038,1,INV,P,CloudForge Software,SW,Accounting software licence,1774.73,177.47,2026-08-04,AU
+A-INV-0039,1,INV,S,,ST,Business cards printing,248.64,24.86,2026-08-11,AU
+A-INV-0039,2,INV,S,,ST,Printer toner,38.64,3.86,2026-08-11,AU
+A-INV-0040,1,INV,S,,BF,Brown rice 5kg,38.70,0.00,2026-08-24,AU
+A-INV-0041,1,INV,S,,SW,Cloud storage annual plan,496.33,49.63,2026-09-23,AU
+A-INV-0042,1,INV,S,,SW,Cloud storage annual plan,1457.21,0.00,2026-07-02,NZ
+A-INV-0043,1,INV,S,,TF,Soft drink carton,53.30,5.33,2026-09-12,AU
+A-INV-0043,2,INV,S,,TF,Hot roast chicken,23.17,2.32,2026-09-12,AU
+A-INV-0044,1,INV,S,,BF,Wholemeal bread loaf,26.40,0.00,2026-09-20,AU
+A-INV-0045,1,INV,P,Corner Print Shop,ST,A4 paper 5 reams,253.37,0.00,2026-07-01,AU
+A-INV-0045,2,INV,P,Corner Print Shop,ST,Printer toner,34.55,0.00,2026-07-01,AU
+A-INV-0046,1,INV,S,,BF,Fresh bananas 1kg,147.34,0.00,2026-09-24,AU
+A-INV-0046,2,INV,S,,BF,Free range eggs 12pk,121.33,0.00,2026-09-24,AU
+A-INV-0046,3,INV,S,,TF,Chocolate biscuits,50.05,5.01,2026-09-24,AU
+A-INV-0046,4,INV,S,,ST,Printer toner,170.10,17.01,2026-09-24,AU
+A-INV-0047,1,INV,P,Riverside Medical Clinic,MED,Pathology tests,133.17,0.00,2026-08-17,AU
+A-INV-0047,2,INV,P,Riverside Medical Clinic,MED,Pathology tests,110.63,0.00,2026-08-17,AU
+A-INV-0047,3,INV,P,Riverside Medical Clinic,MED,GP consultation,86.56,0.00,2026-08-17,AU
+A-INV-0047,4,INV,P,Riverside Medical Clinic,MED,GP consultation,139.21,0.00,2026-08-17,AU
+A-INV-0048,1,INV,S,,TF,Flat white x10,32.08,3.21,2026-08-25,AU
+A-INV-0049,1,INV,S,,TF,Soft drink carton,36.64,3.66,2026-07-17,AU
+A-INV-0049,2,INV,S,,BF,Fresh bananas 1kg,89.61,0.00,2026-07-17,AU
+A-INV-0049,3,INV,S,,BF,Brown rice 5kg,104.84,0.00,2026-07-17,AU
+A-INV-0050,1,INV,P,Swift Payments,PP,Card terminal fee,71.87,7.19,2026-07-19,AU
+A-INV-0050,2,INV,P,Swift Payments,PP,Merchant service fee,152.28,15.23,2026-07-19,AU
+A-INV-0050,3,INV,P,Swift Payments,PP,Merchant service fee,145.06,14.51,2026-07-19,AU
+A-INV-0050,4,INV,P,Swift Payments,PP,Card terminal fee,174.93,17.49,2026-07-19,AU
+A-INV-0051,1,INV,P,Fresh Fields Grocers,TF,Chocolate biscuits,18.80,1.88,2026-07-13,AU
+A-INV-0051,2,INV,P,Fresh Fields Grocers,TF,Soft drink carton,21.18,2.12,2026-07-13,AU
+A-INV-0051,3,INV,P,Fresh Fields Grocers,TF,Soft drink carton,51.04,5.10,2026-07-13,AU
+A-INV-0052,1,INV,P,Corner Print Shop,ST,Business cards printing,284.89,0.00,2026-08-07,AU
+A-INV-0052,2,INV,P,Corner Print Shop,ST,Whiteboard markers,90.95,0.00,2026-08-07,AU
+A-INV-0052,3,INV,P,Corner Print Shop,ST,Whiteboard markers,46.61,0.00,2026-08-07,AU
+A-INV-0053,1,INV,S,,ST,Whiteboard markers,150.48,15.05,2026-08-17,AU
+A-INV-0053,2,INV,S,,TF,Catering platter,49.38,4.94,2026-08-17,AU
+A-INV-0053,3,INV,S,,BF,Cold cooked chicken,83.98,0.00,2026-08-17,AU
+A-INV-0054,1,INV,P,Swift Payments,PP,Merchant service fee,41.08,4.11,2026-07-22,AU
+A-INV-0054,2,INV,P,Swift Payments,PP,Merchant service fee,35.79,3.58,2026-07-22,AU
+A-INV-0054,3,INV,P,Swift Payments,PP,Card terminal fee,95.35,9.54,2026-07-22,AU
+A-INV-0055,1,INV,P,CloudForge Software,SW,Cloud storage annual plan,1827.22,182.72,2026-09-23,AU
+A-INV-0055,2,INV,P,CloudForge Software,SW,Cloud storage annual plan,1596.30,159.63,2026-09-23,AU
+A-INV-0055,3,INV,P,CloudForge Software,SW,Accounting software licence,919.13,91.91,2026-09-23,AU
+A-INV-0055,4,INV,P,CloudForge Software,SW,Accounting software licence,834.55,83.46,2026-09-23,AU
+A-INV-0056,1,INV,S,,BF,Full cream milk 2L,69.83,0.00,2026-07-15,AU
+A-INV-0057,1,INV,P,Corner Print Shop,ST,Whiteboard markers,238.48,0.00,2026-09-06,AU
+A-INV-0057,2,INV,P,Corner Print Shop,ST,Printer toner,125.38,0.00,2026-09-06,AU
+A-INV-0057,3,INV,P,Corner Print Shop,ST,A4 paper 5 reams,296.26,0.00,2026-09-06,AU
+A-INV-0057,4,INV,P,Corner Print Shop,ST,Whiteboard markers,286.33,0.00,2026-09-06,AU
+A-INV-0058,1,INV,P,Corner Print Shop,ST,Whiteboard markers,54.14,0.00,2026-08-08,AU
+A-INV-0059,1,INV,P,PaperTrail Office Supplies,ST,A4 paper 5 reams,147.21,14.72,2026-08-13,AU
+A-INV-0059,2,INV,P,PaperTrail Office Supplies,ST,Printer toner,251.11,25.11,2026-08-13,AU
+A-INV-0059,3,INV,P,PaperTrail Office Supplies,ST,Printer toner,148.39,14.84,2026-08-13,AU
+A-INV-0060,1,INV,S,,TF,Chocolate biscuits,19.98,2.00,2026-07-30,AU
+A-INV-0060,2,INV,S,,SW,Design software seat,1794.64,179.46,2026-07-30,AU
+A-INV-0001,1,INV,P,Riverside Medical Clinic,MED,Pathology tests,192.50,0.00,2026-07-09,AU
+A-INV-9001,1,INV,P,Northbridge Bank,FS,Overdraft interest,464.11,0.00,2026-07-12,AU
+A-INV-9001,2,INV,P,Northbridge Bank,FS,Account keeping fee,413.15,0.00,2026-07-12,AU
+A-INV-9001,3,INV,P,Northbridge Bank,FS,Account keeping fee,227.27,0.00,2026-07-12,AU
