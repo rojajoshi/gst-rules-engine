@@ -104,7 +104,7 @@ quality_checks:
   invalid_country:                      {severity: warning, description: "Destination not in countries.csv (e.g. 'Australia'). Export rule skipped"}
   negative_amount_on_invoice:           {severity: warning, description: "Negative amount on an invoice (allowed on credit notes)"}
   gst_mismatch:                         {severity: warning, description: "gst_variance outside rounding tolerance"}
-  amount_outlier:                       {severity: info,    description: "Amount unusual for this supplier (modified z-score using median + MAD > 3.5). Flagged, not invalid"}
+  amount_outlier:                       {severity: info,    description: "Amount unusually high for this supplier (modified z-score using median + MAD > 3.5). Flagged, not invalid"}
 
 # Reference tables (data/reference/). The CSV files are the source of truth for
 # their values; this file only defines their columns. A test checks every category

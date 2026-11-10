@@ -128,7 +128,7 @@ The answer key for tests: every problem deliberately planted by the generator, w
 | `invalid_country` | warning | Destination not in `countries.csv` (e.g. `Australia`). Export rule skipped |
 | `negative_amount_on_invoice` | warning | Negative amount on an invoice (fine on credit notes) |
 | `gst_mismatch` | warning | `gst_variance` outside rounding tolerance |
-| `amount_outlier` | info | Unusual for this supplier: modified z-score (median + MAD) above 3.5. Flagged, not invalid |
+| `amount_outlier` | info | Unusually high for this supplier: modified z-score (median + MAD) above 3.5. Flagged, not invalid |
 
 **`amount_outlier` rules:**
 - Only amounts above zero are scored, so a negative amount can't distort the supplier's median and MAD. Negatives on invoices are caught by `negative_amount_on_invoice`.

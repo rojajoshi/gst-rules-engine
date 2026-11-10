@@ -49,7 +49,7 @@ def check_amount_outliers(df: pd.DataFrame, amount_col: str, group_col, threshol
 
     flagged = rows[is_outlier]
     messages = [
-        f"Amount {amount} is unusual for this supplier: modified z-score {z:.1f} (group median {med:.2f})"
+        f"Amount {amount} is unusually high for this supplier: modified z-score {z:.1f} (group median {med:.2f})"
         for amount, z, med in zip(flagged[amount_col], score[is_outlier], median[is_outlier])
     ]
     return _issues(flagged, "amount_outlier", "info", messages)
