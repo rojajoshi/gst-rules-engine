@@ -6,7 +6,7 @@ Tax teams receive transaction data from many clients, and every client's file lo
 
 This project is a small pipeline that does that for simplified Australian GST. It maps messy client files into one standard format, checks them for data quality problems, then applies GST rules, with every result traceable back to the source row and the rule that produced it.
 
-**Status: in progress...**
+**Status: in progress.**
 
 ## What's done
 
@@ -14,11 +14,12 @@ This project is a small pipeline that does that for simplified Australian GST. I
 - **Standard schema** ([config/schema.yaml](config/schema.yaml), [docs/data_dictionary.md](docs/data_dictionary.md)): every column, type and quality check in one place
 - **Synthetic data** ([scripts/generate_data.py](scripts/generate_data.py)): two fictional clients with different file layouts and 19 deliberately planted errors (impossible dates, unknown suppliers, GST mismatches, duplicates, outliers), listed in `planted_errors.csv`
 - **Config-driven ingest** ([src/gst_engine/ingest.py](src/gst_engine/ingest.py)): onboarding a new client means writing a small YAML mapping, not changing code. Money is handled as exact decimals, and original values and source row numbers are kept for traceability
+- **Amount outlier check** ([src/gst_engine/quality.py](src/gst_engine/quality.py)): flags unusually high amounts for each supplier using a median-based (MAD) modified z-score, which one huge amount can't hide from the way it can with a mean and standard deviation. Catches exactly the 3 planted outliers
 - **Automated tests** with pytest, running on every push via GitHub Actions
 
 ## What's next
 
-- Data quality checks, including median-based (MAD) outlier detection
+- The remaining data quality checks: missing fields, invalid dates, unmapped tax codes, GST mismatches, duplicates and more
 - The rules engine: GST treatment, expected GST and the rule that fired, for every row
 - Reconciliation: proving the pipeline catches all 19 planted errors
 - A BAS summary in SQL (DuckDB)
