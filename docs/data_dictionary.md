@@ -130,6 +130,11 @@ The answer key for tests: every problem deliberately planted by the generator, w
 | `gst_mismatch` | warning | `gst_variance` outside rounding tolerance |
 | `amount_outlier` | info | Unusual for this supplier: modified z-score (median + MAD) above 3.5. Flagged, not invalid |
 
+**`amount_outlier` rules:**
+- Only amounts above zero are scored, so a negative amount can't distort the supplier's median and MAD. Negatives on invoices are caught by `negative_amount_on_invoice`.
+- Multi-category suppliers are skipped, because mixing their categories in one group means there's no single normal amount to compare against.
+- Only unusually high amounts are flagged, because the review is looking for overstated amounts and small ordinary charges would only add noise.
+
 **Severity:**
 - `error`: the row can't be trusted until fixed. Sets `excluded_from_bas` = true, so it's **left out of BAS totals** and reported separately
 - `warning`: needs a human to check. Still included in totals
